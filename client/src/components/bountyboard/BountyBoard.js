@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import getWeb3 from '../../utils/getWeb3';
 import getContractInstance from '../../utils/getContractInstance';
 
-import bountyBoardContract from '../../contracts/BountyBoard.json';
+import BountyBoardContract from '../../contracts/BountyBoard.json';
 import BountyContract from '../../contracts/Bounty.json';
 
 import './BountyBoard.css';
@@ -20,11 +20,13 @@ class BountyBoard extends Component {
       voteDeposit: '',
       challengeDuration: '',
       voteDuration: '',
-      bountyAddresses: []
+      bountyAddresses: [],
+      bountyArray: []
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.createBounty = this.createBounty.bind(this);
+    this.getBounty = this.getBounty.bind(this);
   }
 
   componentDidMount = async () => {
@@ -35,17 +37,24 @@ class BountyBoard extends Component {
 
       const parentContract = await getContractInstance(
         web3,
-        bountyBoardContract
+        BountyBoardContract
       );
 
       const bountyAddresses = await parentContract.methods
         .getAllBountyAddresses()
         .call({ from: accounts[0] });
 
+      const childrenContracts = await bountyAddresses.map((bountyAddress) => {
+        return getContractInstance(web3, BountyContract, bountyAddress);
+      });
+
+      console.log(childrenContracts);
+
       this.setState({
         web3,
         accounts,
         parentContract,
+        childrenContracts,
         bountyAddresses
       });
     } catch (error) {
@@ -108,6 +117,8 @@ class BountyBoard extends Component {
       voteDuration: ''
     });
   };
+
+  getBounty = async (bountyAddress) => {};
 
   render() {
     const {

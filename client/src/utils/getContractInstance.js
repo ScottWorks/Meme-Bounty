@@ -11,7 +11,7 @@ const getContractInstance = async (
   if (!contractAddress) {
     deployedAddress = contractDefinition.networks[networkId].address;
   } else {
-    deployedAddress = contractDefinition.networks[networkId].contractAddress;
+    deployedAddress = contractAddress;
   }
 
   // create the instance
