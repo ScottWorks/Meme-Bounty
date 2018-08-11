@@ -62,23 +62,28 @@ class BountyBoard extends Component {
 
   getChildInstance = async (web3, accounts, bountyAddress) => {
     const { childContracts, childrenContractDetails } = this.state;
+
     const instance = await getContractInstance(
       web3,
       BountyContract,
       bountyAddress
     );
 
-    const details = await instance.methods
+    console.log(instance);
+
+    const result = await instance.methods
       .getBountyParameters()
       .call({ from: accounts[0] });
+
+    // const parameters = instance.events.LogBountyDetails();
+
+    console.log(result);
 
     let contractsArray = childContracts;
     contractsArray.push(instance);
 
     let contractDetailsArray = childrenContractDetails;
-    contractDetailsArray.push(details);
-
-    console.log(contractsArray, contractDetailsArray);
+    contractDetailsArray.push(result);
 
     this.setState({
       childContracts: contractsArray,
@@ -112,9 +117,9 @@ class BountyBoard extends Component {
     const convertedchallengeDuration = challengeDuration * 3600;
     const convertedvoteDuration = voteDuration * 3600;
 
-    const newBountyAddress = await parentContract.methods
+    const result = await parentContract.methods
       .createBountyContract(
-        bountyTotal,
+        convertedBountyTotal,
         bountyDescription,
         convertedVoteDeposit,
         convertedchallengeDuration,
@@ -125,7 +130,11 @@ class BountyBoard extends Component {
         value: convertedBountyTotal
       });
 
-    let childInstance = this.getChildInstance(newBountyAddress);
+    console.log(result);
+
+    let address = result.events.LogAddress.returnValues[0];
+
+    let childInstance = this.getChildInstance(web3, accounts, address);
 
     this.setState({
       childContracts: childContracts.push(childInstance),

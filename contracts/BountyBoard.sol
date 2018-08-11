@@ -36,14 +36,13 @@ contract BountyBoard {
 
     function createBountyContract(
         uint posterDeposit, 
-        string description, 
+        uint description, 
         uint voterDeposit, 
         uint challengeDuration, 
         uint voteDuration
         ) 
     public 
     payable
-    returns(address)
     {        
         address owner = msg.sender;
 
@@ -57,6 +56,7 @@ contract BountyBoard {
         );
 
         bountyContractAddresses.push(bountyContract);
+
         emit LogAddress(bountyContract);
     }
 }
