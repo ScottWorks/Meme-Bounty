@@ -14,6 +14,7 @@ contract Bounty {
     uint posterDeposit;
     uint creationTimestamp;
     string description;
+    string status;
     uint voterDeposit;
     uint challengeDuration;
     uint voteDuration;
@@ -82,7 +83,20 @@ contract Bounty {
 // ==========
 
 
-
+    event LogBountyDetails(
+        address owner,
+        uint posterDeposit,
+        uint creationTimestamp,
+        string description,
+        string status,
+        uint voterDeposit,
+        uint challengeDuration,
+        uint voteDuration,
+        uint totalVoterCount,
+        uint winningVoterCount,
+        uint voterDepositTotal, 
+        uint voterPayout
+    );
     event LogString(bytes stringgy);
     event LogHash(bytes20 _address, bytes32 _commitHash, bytes32 _revealHash);
     event LogAddressArraySize(uint _size);
@@ -112,6 +126,7 @@ contract Bounty {
 
         posterDeposit = _posterDeposit;
         owner = _owner;
+        status = "Challenge";
         creationTimestamp = now;
         description = _description;
         voterDeposit = _voterDeposit;
@@ -131,24 +146,46 @@ contract Bounty {
 
     function getBountyParameters()
     public
-    view
-    returns(
-        address _owner,
-        uint _posterDeposit, 
-        string _description,
-        uint _voterDeposit,
-        uint _challengerDeadline,
-        uint _voteDuration
-    )
     {
-        return(
+        getStatus();
+
+        emit LogBountyDetails(            
             owner,
-            posterDeposit, 
+            posterDeposit,
+            creationTimestamp, 
             description,
+            status,
             voterDeposit,
             challengeDuration,
-            voteDuration
+            voteDuration,
+            totalVoterCount,
+            winningVoterCount,
+            voterDepositTotal,
+            voterPayout
         );
+    }
+
+    function getStatus()
+    internal
+    returns(string){
+            
+        if(now < creationTimestamp + challengeDuration){
+            status = "Challenge";
+
+        } else if(now > creationTimestamp + challengeDuration && now < creationTimestamp + challengeDuration + voteDuration){
+            status = "Commit";
+
+        } else if(now > creationTimestamp + challengeDuration + voteDuration && now < creationTimestamp + challengeDuration + voteDuration + 48 hours){
+            status = "Reveal";
+
+        } else if(now > creationTimestamp + challengeDuration + voteDuration + 48 hours){
+            status = "Withdraw";
+
+        } else {
+            status = "Inactive";
+        }
+
+        return status;
     }
 
     /** @dev Returns array containing challenger addresses
@@ -255,6 +292,7 @@ contract Bounty {
     // isRevealPeriod
     returns(address)
     {
+
         Vote storage _voter = voter[msg.sender];
         Challenge storage _challenger = challengerAddress[address(_challengerAddress)];
 
