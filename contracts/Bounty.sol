@@ -9,7 +9,6 @@ contract Bounty {
 // =========
 
 
-
     address owner;
     uint posterDeposit;
     uint creationTimestamp;
@@ -64,22 +63,36 @@ contract Bounty {
 
 
     modifier isChallengePeriod(){
-        require(status == Status.Challenge, "Bounty is currently in the Challenge phase.");
+        require(now < creationTimestamp + challengeDuration, "Challenge period has ended.");
+        if(status != Status.Challenge){
+            status = Status.Challenge;
+        }
         _;
     }
 
     modifier isCommitPeriod(){
-        require(status == Status.Commit, "Bounty is currently in the Commit phase.");
+        require(now > creationTimestamp + challengeDuration, "Commit period has not started.");
+        require(now < creationTimestamp + challengeDuration + voteDuration, "Commit period has ended.");
+        if(status != Status.Commit){
+            status = Status.Commit;
+        }
         _;
     }
 
     modifier isRevealPeriod(){
-        require(status == Status.Reveal, "Bounty is currently in the Reveal phase.");
+        require(now > creationTimestamp + challengeDuration + voteDuration, "Reveal period has not started.");
+        require(now < creationTimestamp + challengeDuration + voteDuration + 48 hours, "Reveal period has ended.");
+        if(status != Status.Reveal){
+            status = Status.Reveal;
+        }        
         _;
     }
     
     modifier isWithdrawlPeriod(){
-        require(status == Status.Withdraw, "Bounty is currently in the Withdraw phase.");
+        require(now > creationTimestamp + challengeDuration + voteDuration + 48 hours, "Polling period has not started.");
+        if(status != Status.Withdraw){
+            status = Status.Withdraw;
+        }        
         _;
     }
 
@@ -91,20 +104,20 @@ contract Bounty {
 
 
 
-    event LogBountyDetails(
-        address,
-        uint,
-        uint,
-        uint,
-        Status,
-        uint,
-        uint,
-        uint,
-        uint,
-        uint,
-        uint, 
-        uint
-    );
+    // event LogBountyDetails(
+    //     address,
+    //     uint,
+    //     uint,
+    //     uint,
+    //     Status,
+    //     uint,
+    //     uint,
+    //     uint,
+    //     uint,
+    //     uint,
+    //     uint, 
+    //     uint
+    // );
     event LogAddress(address);
     event LogString(bytes);
     event LogHash(bytes20, bytes32, bytes32);
@@ -155,10 +168,25 @@ contract Bounty {
 
     function getBountyParameters()
     public
+    view
+    returns(
+        address,
+        uint,
+        uint,
+        uint,
+        Status,
+        uint,
+        uint,
+        uint,
+        uint,
+        uint,
+        uint, 
+        uint
+    )
     {
-        getStatus();
+        // getStatus();
 
-        emit LogBountyDetails(            
+        return(            
             owner,
             posterDeposit,
             creationTimestamp, 
@@ -174,29 +202,29 @@ contract Bounty {
         );
     }
 
-    function getStatus()
-    private
-    returns(Status){
+    // function getStatus()
+    // private
+    // returns(Status){
             
-        if(now < creationTimestamp + challengeDuration){
-            status = Status.Challenge;
+    //     if(now < creationTimestamp + challengeDuration){
+    //         status = Status.Challenge;
 
-        } else if(now > creationTimestamp + challengeDuration && now < creationTimestamp + challengeDuration + voteDuration){
-            status = Status.Commit;
+    //     } else if(now > creationTimestamp + challengeDuration && now < creationTimestamp + challengeDuration + voteDuration){
+    //         status = Status.Commit;
 
-        } else if(now > creationTimestamp + challengeDuration + voteDuration && now < creationTimestamp + challengeDuration + voteDuration + 48 hours){
-            status = Status.Reveal;
+    //     } else if(now > creationTimestamp + challengeDuration + voteDuration && now < creationTimestamp + challengeDuration + voteDuration + 48 hours){
+    //         status = Status.Reveal;
 
-        } else if(now > creationTimestamp + challengeDuration + voteDuration + 48 hours){
-            status = Status.Withdraw;
+    //     } else if(now > creationTimestamp + challengeDuration + voteDuration + 48 hours){
+    //         status = Status.Withdraw;
 
-        } else {
-            status = Status.Inactive;
+    //     } else {
+    //         status = Status.Inactive;
 
-        }
+    //     }
 
-        return status;
-    }
+    //     return status;
+    // }
 
 
     /** @dev Returns array containing challenger addresses
