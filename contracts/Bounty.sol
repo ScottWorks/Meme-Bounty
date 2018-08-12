@@ -12,7 +12,7 @@ contract Bounty {
     address owner;
     uint posterDeposit;
     uint creationTimestamp;
-    uint description;
+    string description;
     uint voterDeposit;
     uint challengeDuration;
     uint voteDuration;
@@ -134,7 +134,7 @@ contract Bounty {
     constructor(
         uint _posterDeposit, 
         address _owner,
-        uint _description,
+        string _description,
         uint _voterDeposit,
         uint _challengerDeadline,
         uint _voteDuration
@@ -173,7 +173,7 @@ contract Bounty {
         address,
         uint,
         uint,
-        uint,
+        string,
         Status,
         uint,
         uint,

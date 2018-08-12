@@ -36,7 +36,7 @@ contract BountyBoard {
 
     function createBountyContract(
         uint posterDeposit, 
-        uint description, 
+        string description, 
         uint voterDeposit, 
         uint challengeDuration, 
         uint voteDuration

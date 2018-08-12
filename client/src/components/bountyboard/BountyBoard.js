@@ -6,6 +6,9 @@ import getContractInstance from '../../utils/getContractInstance';
 import BountyBoardContract from '../../contracts/BountyBoard.json';
 import BountyContract from '../../contracts/Bounty.json';
 
+import BountyForm from './BountyForm';
+import BountyList from './BountyList';
+
 import './BountyBoard.css';
 
 class BountyBoard extends Component {
@@ -69,15 +72,9 @@ class BountyBoard extends Component {
       bountyAddress
     );
 
-    console.log(instance);
-
     const result = await instance.methods
       .getBountyParameters()
       .call({ from: accounts[0] });
-
-    // const parameters = instance.events.LogBountyDetails();
-
-    console.log(result);
 
     let contractsArray = childContracts;
     contractsArray.push(instance);
@@ -130,10 +127,7 @@ class BountyBoard extends Component {
         value: convertedBountyTotal
       });
 
-    console.log(result);
-
     let address = result.events.LogAddress.returnValues[0];
-
     let childInstance = this.getChildInstance(web3, accounts, address);
 
     this.setState({
@@ -157,6 +151,8 @@ class BountyBoard extends Component {
       voteDuration
     } = this.state;
 
+    console.log(childrenContractDetails);
+
     if (!web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
@@ -167,7 +163,7 @@ class BountyBoard extends Component {
 
         <h3>Create New Bounty</h3>
 
-        <NewBountyForm
+        <BountyForm
           state={{
             bountyTotal,
             bountyDescription,
@@ -178,67 +174,11 @@ class BountyBoard extends Component {
           handleChange={this.handleChange}
           createBounty={this.createBounty}
         />
+
+        <BountyList state={{ childrenContractDetails }} />
       </div>
     );
   }
 }
 
 export default BountyBoard;
-
-const NewBountyForm = ({ state, handleChange, createBounty }) => {
-  return (
-    <form onSubmit={(e) => createBounty(e)}>
-      <label htmlFor="Bounty-Total">Bounty Total (ETH): </label>
-      <input
-        name="Bounty-Total"
-        type="number"
-        value={state.bountyTotal}
-        onChange={(e) => handleChange('bountyTotal', e.target.value)}
-      />
-      <br />
-      <br />
-
-      <label htmlFor="Bounty-Description">Bounty Description: </label>
-      <input
-        name="Bounty-Description"
-        type="text"
-        value={state.bountyDescription}
-        onChange={(e) => handleChange('bountyDescription', e.target.value)}
-      />
-      <br />
-      <br />
-
-      <label htmlFor="Vote-Deposit">Vote Deposit (ETH): </label>
-      <input
-        name="Vote-Deposit"
-        type="number"
-        value={state.voteDeposit}
-        onChange={(e) => handleChange('voteDeposit', e.target.value)}
-      />
-      <br />
-      <br />
-
-      <label htmlFor="Challenge-Duration">Challenge Duration (hr): </label>
-      <input
-        name="Challenge-Duration"
-        type="number"
-        value={state.challengeDuration}
-        onChange={(e) => handleChange('challengeDuration', e.target.value)}
-      />
-      <br />
-      <br />
-
-      <label htmlFor="Vote-Duration">Vote Duration (hr): </label>
-      <input
-        name="Vote-Duration"
-        type="number"
-        value={state.voteDuration}
-        onChange={(e) => handleChange('voteDuration', e.target.value)}
-      />
-      <br />
-      <br />
-
-      <input type="submit" value="Submit" />
-    </form>
-  );
-};
