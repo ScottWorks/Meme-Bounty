@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 
-import getWeb3 from '../../utils/getWeb3';
 import getContractInstance from '../../utils/getContractInstance';
+import getWeb3 from '../../utils/getWeb3';
+import { ipfsUpload } from '../../utils/ipfs';
+import timeConversion from '../../utils/timeConversion';
 
 import BountyBoardContract from '../../contracts/BountyBoard.json';
 import BountyContract from '../../contracts/Bounty.json';
@@ -24,12 +26,15 @@ class BountyBoard extends Component {
       bountyDescription: '',
       voteDeposit: '',
       challengeDuration: '',
-      voteDuration: ''
+      voteDuration: '',
+      buffer: null
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.createBounty = this.createBounty.bind(this);
     this.getChildInstance = this.getChildInstance.bind(this);
+    this.formatBountyData = this.formatBountyData.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
   }
 
   componentDidMount = async () => {
@@ -72,21 +77,73 @@ class BountyBoard extends Component {
       bountyAddress
     );
 
+    let contractsArray = childContracts;
+    contractsArray.push(instance);
+
     const result = await instance.methods
       .getBountyParameters()
       .call({ from: accounts[0] });
 
-    let contractsArray = childContracts;
-    contractsArray.push(instance);
+    let formattedData = await this.formatBountyData(result);
 
     let contractDetailsArray = childrenContractDetails;
-    contractDetailsArray.push(result);
+    contractDetailsArray.push(formattedData);
+
+    console.log(contractsArray, contractDetailsArray);
 
     this.setState({
       childContracts: contractsArray,
       childrenContractDetails: contractDetailsArray
     });
   };
+
+  formatBountyData(inputData) {
+    const { web3 } = this.state;
+
+    let status;
+
+    let creationDate = timeConversion.fromEpoch(inputData[3], 'MM-DD-YYYY');
+
+    switch (inputData[5]) {
+      case '0':
+        status = 'Challenge';
+        break;
+      case '1':
+        status = 'Commit';
+        break;
+      case '2':
+        status = 'Reveal';
+        break;
+      case '3':
+        status = 'Withdraw';
+        break;
+      case '4':
+        status = 'Inactive';
+        break;
+      default:
+        status = 'Error';
+        break;
+    }
+
+    const data = {
+      contractAddress: inputData[0],
+      owner: inputData[1],
+      posterDeposit: web3.utils.fromWei(inputData[2], 'ether'),
+      creationTimestamp: inputData[3],
+      creationDate: creationDate,
+      description: inputData[4],
+      status: status,
+      voterDeposit: web3.utils.fromWei(inputData[6], 'ether'),
+      challengeDuration: inputData[7],
+      voteDuration: inputData[8],
+      totalVoterCount: inputData[9],
+      winningVoterCount: inputData[10],
+      voterDepositTotal: web3.utils.fromWei(inputData[11], 'ether'),
+      voterPayout: web3.utils.fromWei(inputData[12], 'ether')
+    };
+
+    return data;
+  }
 
   handleChange(key, value) {
     this.setState({
@@ -127,6 +184,8 @@ class BountyBoard extends Component {
         value: convertedBountyTotal
       });
 
+    console.log(result);
+
     let address = result.events.LogAddress.returnValues[0];
     let childInstance = this.getChildInstance(web3, accounts, address);
 
@@ -140,6 +199,31 @@ class BountyBoard extends Component {
     });
   };
 
+  uploadFile = async (event, bountyAddress) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const { web3, accounts } = this.state;
+
+    const file = event.target.files[0];
+    let reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = async () => {
+      const buffer = await Buffer.from(reader.result);
+
+      const ipfsHash = await ipfsUpload(buffer);
+
+      const instance = await getContractInstance(
+        web3,
+        BountyContract,
+        bountyAddress
+      );
+
+      console.log(ipfsHash);
+      instance.methods.submitChallenge(ipfsHash).send({ from: accounts[0] });
+    };
+  };
+
   render() {
     const {
       web3,
@@ -151,17 +235,13 @@ class BountyBoard extends Component {
       voteDuration
     } = this.state;
 
-    console.log(childrenContractDetails);
-
     if (!web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
 
     return (
       <div className="BountyBoard">
-        <h1>Bounty Board</h1>
-
-        <h3>Create New Bounty</h3>
+        <h1>Create New Bounty</h1>
 
         <BountyForm
           state={{
@@ -175,7 +255,10 @@ class BountyBoard extends Component {
           createBounty={this.createBounty}
         />
 
-        <BountyList state={{ childrenContractDetails }} />
+        <BountyList
+          state={{ childrenContractDetails }}
+          uploadFile={this.uploadFile}
+        />
       </div>
     );
   }

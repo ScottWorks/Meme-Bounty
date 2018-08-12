@@ -9,7 +9,7 @@ contract Bounty {
 // =========
 
 
-    address owner;
+    address ownerAddress;
     uint posterDeposit;
     uint creationTimestamp;
     string description;
@@ -104,20 +104,6 @@ contract Bounty {
 
 
 
-    // event LogBountyDetails(
-    //     address,
-    //     uint,
-    //     uint,
-    //     uint,
-    //     Status,
-    //     uint,
-    //     uint,
-    //     uint,
-    //     uint,
-    //     uint,
-    //     uint, 
-    //     uint
-    // );
     event LogAddress(address);
     event LogString(bytes);
     event LogHash(bytes20, bytes32, bytes32);
@@ -147,7 +133,7 @@ contract Bounty {
         require(!isInitialized, "Bounty is not modifiable");
 
         posterDeposit = _posterDeposit;
-        owner = _owner;
+        ownerAddress = _owner;
         description = _description;
         voterDeposit = _voterDeposit;
         challengeDuration = _challengerDeadline;
@@ -171,6 +157,7 @@ contract Bounty {
     view
     returns(
         address,
+        address,
         uint,
         uint,
         string,
@@ -187,7 +174,8 @@ contract Bounty {
         // getStatus();
 
         return(            
-            owner,
+            address(this),
+            ownerAddress,
             posterDeposit,
             creationTimestamp, 
             description,
@@ -201,31 +189,6 @@ contract Bounty {
             voterPayout
         );
     }
-
-    // function getStatus()
-    // private
-    // returns(Status){
-            
-    //     if(now < creationTimestamp + challengeDuration){
-    //         status = Status.Challenge;
-
-    //     } else if(now > creationTimestamp + challengeDuration && now < creationTimestamp + challengeDuration + voteDuration){
-    //         status = Status.Commit;
-
-    //     } else if(now > creationTimestamp + challengeDuration + voteDuration && now < creationTimestamp + challengeDuration + voteDuration + 48 hours){
-    //         status = Status.Reveal;
-
-    //     } else if(now > creationTimestamp + challengeDuration + voteDuration + 48 hours){
-    //         status = Status.Withdraw;
-
-    //     } else {
-    //         status = Status.Inactive;
-
-    //     }
-
-    //     return status;
-    // }
-
 
     /** @dev Returns array containing challenger addresses
     *   @return array of challenger addresses
@@ -265,6 +228,7 @@ contract Bounty {
             winner.upVotes
         );
     }
+
 
 
 // ====================

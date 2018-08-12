@@ -1,15 +1,22 @@
 import React from 'react';
 
 function BountyCard(props) {
+  const { uploadFile } = props;
   const { elem } = props.state;
 
   return (
     <div className="BountyBoard">
-      <p>Bounty Owner: {elem[0]}</p>
-      <p>Bounty Total: {elem[1]}</p>
-      <p>Bounty Description: {elem[3]}</p>
-      <p>Cost per Vote: {elem[5]}</p>
-      <p>Total Votes: {elem[8]}</p>
+      <p>Status: {elem.status}</p>
+      <p>Bounty Owner: {elem.owner}</p>
+      <p>Bounty Total: {elem.posterDeposit}</p>
+      <p>Bounty Description: {elem.description}</p>
+      <p>Cost per Vote: {elem.voterDeposit}</p>
+      <p>Total Votes: {elem.totalVoterCount}</p>
+      <input type="button" value="View Challenges" />
+      <input
+        type="file"
+        onChange={(e) => uploadFile(e, elem.contractAddress)}
+      />
     </div>
   );
 }
