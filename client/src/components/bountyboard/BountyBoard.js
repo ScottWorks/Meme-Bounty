@@ -28,15 +28,13 @@ class BountyBoard extends Component {
       voteDeposit: '',
       challengeDuration: '',
       voteDuration: '',
+      currentBountyDetails: null,
       currentBountyAddress: null,
       redirect: false
     };
 
     this.handleChange = this.handleChange.bind(this);
-    // this.createBounty = this.createBounty.bind(this);
-    // this.getBounty = this.getBounty.bind(this);
     this.formatBountyData = this.formatBountyData.bind(this);
-    // this.uploadFile = this.uploadFile.bind(this);
     this.redirectToBounty = this.redirectToBounty.bind(this);
   }
 
@@ -191,7 +189,7 @@ class BountyBoard extends Component {
     });
   };
 
-  uploadFile = async (event, bountyAddress) => {
+  uploadFile = async (event, details) => {
     event.stopPropagation();
     event.preventDefault();
 
@@ -208,19 +206,21 @@ class BountyBoard extends Component {
       const instance = await getContractInstance(
         web3,
         BountyContract,
-        bountyAddress
+        details.bountyAddress
       );
 
       console.log(ipfsHash);
       instance.methods.submitChallenge(ipfsHash).send({ from: accounts[0] });
 
-      this.redirectToBounty(bountyAddress);
+      this.redirectToBounty(details);
     };
   };
 
-  redirectToBounty(bountyAddress) {
+  redirectToBounty(details) {
+    console.log(details);
+
     this.setState({
-      currentBountyAddress: bountyAddress,
+      currentBountyDetails: details,
       redirect: true
     });
   }
@@ -234,7 +234,7 @@ class BountyBoard extends Component {
       voteDeposit,
       challengeDuration,
       voteDuration,
-      currentBountyAddress,
+      currentBountyDetails,
       redirect
     } = this.state;
 
@@ -246,8 +246,11 @@ class BountyBoard extends Component {
       return (
         <Redirect
           to={{
-            pathname: `/bounty/${currentBountyAddress}`,
-            state: { web3: web3, bountyAddress: currentBountyAddress }
+            pathname: `/bounty/${currentBountyDetails.bountyAddress}`,
+            state: {
+              web3: web3,
+              bountyDetails: currentBountyDetails
+            }
           }}
         />
       );

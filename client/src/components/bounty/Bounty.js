@@ -15,6 +15,7 @@ class Bounty extends Component {
     this.state = {
       web3: null,
       accounts: null,
+      bountyDetails: null,
       bountyInstance: null,
       ipfsUrls: []
     };
@@ -25,13 +26,16 @@ class Bounty extends Component {
       console.log('fuck');
       return null;
     }
-    const { bountyAddress, web3 } = this.props.location.state;
+
+    console.log(this.props);
+
+    const { bountyDetails, web3 } = this.props.location.state;
 
     const accounts = await web3.eth.getAccounts();
     const bountyInstance = await getContractInstance(
       web3,
       BountyContract,
-      bountyAddress
+      bountyDetails.bountyAddress
     );
 
     const challengerAddresses = await bountyInstance.methods
@@ -45,6 +49,7 @@ class Bounty extends Component {
     this.setState({
       web3,
       accounts,
+      bountyDetails,
       bountyInstance
     });
   };
@@ -60,7 +65,14 @@ class Bounty extends Component {
   };
 
   upVoteChallenge = async () => {
-    const { web3, account, bountyInstance } = this.state;
+    const { web3, accounts, bountyDetails, bountyInstance } = this.state;
+
+    console.log(bountyDetails.voterDeposit);
+
+    await bountyInstance.methods.submitVoteDeposit().send({
+      from: accounts[0],
+      value: web3.utils.toWei(bountyDetails.voterDeposit, 'ether')
+    });
   };
 
   render() {
@@ -78,7 +90,10 @@ class Bounty extends Component {
           Home
         </Link>
 
-        <ChallengeList data={{ ipfsUrls }} />
+        <ChallengeList
+          data={{ ipfsUrls }}
+          upVoteChallenge={this.upVoteChallenge}
+        />
       </div>
     );
   }

@@ -16,9 +16,9 @@ function BountyCard(props) {
       <input
         type="button"
         value="View Challenges"
-        onClick={() => redirectToBounty(elem.bountyAddress)}
+        onClick={() => redirectToBounty(elem)}
       />
-      <input type="file" onChange={(e) => uploadFile(e, elem.bountyAddress)} />
+      <input type="file" onChange={(e) => uploadFile(e, elem)} />
     </div>
   );
 }
