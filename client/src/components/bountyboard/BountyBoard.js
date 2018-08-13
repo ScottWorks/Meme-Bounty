@@ -72,27 +72,17 @@ class BountyBoard extends Component {
   }
 
   getBounty = async (web3, accounts, bountyAddress) => {
-    // const { bountyInstances, bountyDetails } = this.state;
-
     const instance = await getContractInstance(
       web3,
       BountyContract,
       bountyAddress
     );
 
-    // let contractsArray = bountyInstances;
-    // contractsArray.push(instance);
-
     const result = await instance.methods
       .getBountyParameters()
       .call({ from: accounts[0] });
 
     let formattedData = await this.formatBountyData(result);
-
-    // let bountyDetailsArray = bountyDetails;
-    // bountyDetailsArray.push(formattedData);
-
-    // console.log(contractsArray, bountyDetailsArray);
 
     this.setState({
       bountyInstances: [...this.state.bountyInstances, instance],
@@ -161,7 +151,6 @@ class BountyBoard extends Component {
       web3,
       accounts,
       bountyBoardInstance,
-      // bountyInstances,
       bountyTotal,
       bountyDescription,
       voteDeposit,
@@ -269,7 +258,7 @@ class BountyBoard extends Component {
         <h1>Create New Bounty</h1>
 
         <BountyForm
-          state={{
+          data={{
             bountyTotal,
             bountyDescription,
             voteDeposit,
@@ -281,7 +270,7 @@ class BountyBoard extends Component {
         />
 
         <BountyList
-          state={{ bountyDetails }}
+          data={{ bountyDetails }}
           uploadFile={this.uploadFile}
           redirectToBounty={this.redirectToBounty}
         />

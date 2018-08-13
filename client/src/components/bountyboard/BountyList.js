@@ -4,7 +4,7 @@ import BountyCard from './BountyCard';
 
 function BountyList(props) {
   const { uploadFile, redirectToBounty } = props;
-  const { bountyDetails } = props.state;
+  const { bountyDetails } = props.data;
   return (
     <div className="BountyBoard">
       <h1>Bounty Board</h1>
@@ -12,7 +12,7 @@ function BountyList(props) {
         return (
           <div key={i}>
             <BountyCard
-              state={{ elem }}
+              data={{ elem }}
               uploadFile={uploadFile}
               redirectToBounty={redirectToBounty}
             />

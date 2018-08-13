@@ -14,7 +14,7 @@ export function ipfsUpload(buffer) {
         reject(err);
       } else {
         const hash = ipfsHash[0].hash;
-        let res = `"https://gateway.ipfs.io/ipfs/${hash}"`;
+        let res = `https://gateway.ipfs.io/ipfs/${hash}`;
 
         resolve(res);
       }

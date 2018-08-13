@@ -1,7 +1,7 @@
 import React from 'react';
 
 function BountyForm(props) {
-  const { state, handleChange, createBounty } = props;
+  const { data, handleChange, createBounty } = props;
 
   return (
     <form onSubmit={(e) => createBounty(e)}>
@@ -9,7 +9,7 @@ function BountyForm(props) {
       <input
         name="Bounty-Total"
         type="number"
-        value={state.bountyTotal}
+        value={data.bountyTotal}
         onChange={(e) => handleChange('bountyTotal', e.target.value)}
       />
       <br />
@@ -19,7 +19,7 @@ function BountyForm(props) {
       <input
         name="Bounty-Description"
         type="text"
-        value={state.bountyDescription}
+        value={data.bountyDescription}
         onChange={(e) => handleChange('bountyDescription', e.target.value)}
       />
       <br />
@@ -29,7 +29,7 @@ function BountyForm(props) {
       <input
         name="Vote-Deposit"
         type="number"
-        value={state.voteDeposit}
+        value={data.voteDeposit}
         onChange={(e) => handleChange('voteDeposit', e.target.value)}
       />
       <br />
@@ -39,7 +39,7 @@ function BountyForm(props) {
       <input
         name="Challenge-Duration"
         type="number"
-        value={state.challengeDuration}
+        value={data.challengeDuration}
         onChange={(e) => handleChange('challengeDuration', e.target.value)}
       />
       <br />
@@ -49,7 +49,7 @@ function BountyForm(props) {
       <input
         name="Vote-Duration"
         type="number"
-        value={state.voteDuration}
+        value={data.voteDuration}
         onChange={(e) => handleChange('voteDuration', e.target.value)}
       />
       <br />

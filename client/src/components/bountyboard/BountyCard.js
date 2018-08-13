@@ -2,7 +2,7 @@ import React from 'react';
 
 function BountyCard(props) {
   const { uploadFile, redirectToBounty } = props;
-  const { elem } = props.state;
+  const { elem } = props.data;
 
   return (
     <div className="BountyBoard">

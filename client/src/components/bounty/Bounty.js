@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import getWeb3 from '../../utils/getWeb3';
 import getContractInstance from '../../utils/getContractInstance';
 
 import BountyContract from '../../contracts/Bounty.json';
+
+import ChallengeList from './ChallengeList';
 
 import './Bounty.css';
 
@@ -59,11 +60,12 @@ class Bounty extends Component {
   }
 
   render() {
-    const { web3 } = this.state;
+    const { web3, ipfsUrls } = this.state;
 
     return (
       <div className="Bounty">
         <h1>Bounty</h1>
+
         <Link
           to={{
             pathname: `/`,
@@ -72,6 +74,8 @@ class Bounty extends Component {
         >
           Home
         </Link>
+
+        <ChallengeList data={{ ipfsUrls }} />
       </div>
     );
   }

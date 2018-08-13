@@ -40,6 +40,7 @@ contract Bounty {
         uint submissionTimestamp;
         uint upVotes;
         address[] voted;
+        bool hasSubmitted;
     }
 
     mapping(address => Challenge) challengerAddress;
@@ -255,10 +256,13 @@ contract Bounty {
     // isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
+        
+        require(!_challenger.hasSubmitted, "Only one submission per Challenger");
 
         _challenger.ipfsUrl = _ipfsUrl;
         _challenger.submissionTimestamp = now;
         challengerAddresses.push(msg.sender);
+        _challenger.hasSubmitted = true;
     }   
 
 
