@@ -20,7 +20,7 @@ class Bounty extends Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     if (typeof this.props.location.state === 'undefined') {
       console.log('fuck');
       return null;
@@ -47,9 +47,9 @@ class Bounty extends Component {
       accounts,
       bountyInstance
     });
-  }
+  };
 
-  async getIpfsUrl(challengerAddress, accounts, bountyInstance) {
+  getIpfsUrl = async (challengerAddress, accounts, bountyInstance) => {
     let ipfsUrl = await bountyInstance.methods
       .getIpfsUrl(challengerAddress)
       .call({ from: accounts[0] });
@@ -57,10 +57,14 @@ class Bounty extends Component {
     this.setState({
       ipfsUrls: [...this.state.ipfsUrls, ipfsUrl]
     });
-  }
+  };
+
+  upVoteChallenge = async () => {
+    const { web3, account, bountyInstance } = this.state;
+  };
 
   render() {
-    const { web3, ipfsUrls } = this.state;
+    const { ipfsUrls } = this.state;
 
     return (
       <div className="Bounty">
@@ -68,8 +72,7 @@ class Bounty extends Component {
 
         <Link
           to={{
-            pathname: `/`,
-            state: { web3: web3 }
+            pathname: `/`
           }}
         >
           Home

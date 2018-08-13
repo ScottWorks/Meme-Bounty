@@ -33,14 +33,14 @@ class BountyBoard extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.createBounty = this.createBounty.bind(this);
-    this.getBounty = this.getBounty.bind(this);
+    // this.createBounty = this.createBounty.bind(this);
+    // this.getBounty = this.getBounty.bind(this);
     this.formatBountyData = this.formatBountyData.bind(this);
-    this.uploadFile = this.uploadFile.bind(this);
+    // this.uploadFile = this.uploadFile.bind(this);
     this.redirectToBounty = this.redirectToBounty.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     try {
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
@@ -69,7 +69,7 @@ class BountyBoard extends Component {
       );
       console.log(error);
     }
-  }
+  };
 
   getBounty = async (web3, accounts, bountyAddress) => {
     const instance = await getContractInstance(
