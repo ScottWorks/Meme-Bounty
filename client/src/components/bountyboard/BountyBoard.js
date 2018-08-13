@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 
 import getContractInstance from '../../utils/getContractInstance';
 import getWeb3 from '../../utils/getWeb3';
@@ -14,50 +15,52 @@ import BountyList from './BountyList';
 import './BountyBoard.css';
 
 class BountyBoard extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       web3: null,
       accounts: null,
-      parentContract: null,
-      childContracts: [],
-      childrenContractDetails: [],
+      bountyBoardInstance: null,
+      bountyInstances: [],
+      bountyDetails: [],
       bountyTotal: '',
       bountyDescription: '',
       voteDeposit: '',
       challengeDuration: '',
       voteDuration: '',
-      buffer: null
+      currentBountyAddress: null,
+      redirect: false
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.createBounty = this.createBounty.bind(this);
-    this.getChildInstance = this.getChildInstance.bind(this);
+    this.getBounty = this.getBounty.bind(this);
     this.formatBountyData = this.formatBountyData.bind(this);
     this.uploadFile = this.uploadFile.bind(this);
+    this.redirectToBounty = this.redirectToBounty.bind(this);
   }
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     try {
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
-      const parentContract = await getContractInstance(
+      const bountyBoardInstance = await getContractInstance(
         web3,
         BountyBoardContract
       );
 
-      const bountyAddresses = await parentContract.methods
+      const bountyAddresses = await bountyBoardInstance.methods
         .getAllBountyAddresses()
         .call({ from: accounts[0] });
 
       bountyAddresses.forEach((bountyAddress) => {
-        return this.getChildInstance(web3, accounts, bountyAddress);
+        return this.getBounty(web3, accounts, bountyAddress);
       });
 
       this.setState({
         web3,
         accounts,
-        parentContract
+        bountyBoardInstance
       });
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -66,10 +69,10 @@ class BountyBoard extends Component {
       );
       console.log(error);
     }
-  };
+  }
 
-  getChildInstance = async (web3, accounts, bountyAddress) => {
-    const { childContracts, childrenContractDetails } = this.state;
+  getBounty = async (web3, accounts, bountyAddress) => {
+    // const { bountyInstances, bountyDetails } = this.state;
 
     const instance = await getContractInstance(
       web3,
@@ -77,8 +80,8 @@ class BountyBoard extends Component {
       bountyAddress
     );
 
-    let contractsArray = childContracts;
-    contractsArray.push(instance);
+    // let contractsArray = bountyInstances;
+    // contractsArray.push(instance);
 
     const result = await instance.methods
       .getBountyParameters()
@@ -86,14 +89,14 @@ class BountyBoard extends Component {
 
     let formattedData = await this.formatBountyData(result);
 
-    let contractDetailsArray = childrenContractDetails;
-    contractDetailsArray.push(formattedData);
+    // let bountyDetailsArray = bountyDetails;
+    // bountyDetailsArray.push(formattedData);
 
-    console.log(contractsArray, contractDetailsArray);
+    // console.log(contractsArray, bountyDetailsArray);
 
     this.setState({
-      childContracts: contractsArray,
-      childrenContractDetails: contractDetailsArray
+      bountyInstances: [...this.state.bountyInstances, instance],
+      bountyDetails: [...this.state.bountyDetails, formattedData]
     });
   };
 
@@ -126,7 +129,7 @@ class BountyBoard extends Component {
     }
 
     const data = {
-      contractAddress: inputData[0],
+      bountyAddress: inputData[0],
       owner: inputData[1],
       posterDeposit: web3.utils.fromWei(inputData[2], 'ether'),
       creationTimestamp: inputData[3],
@@ -157,8 +160,8 @@ class BountyBoard extends Component {
     const {
       web3,
       accounts,
-      parentContract,
-      childContracts,
+      bountyBoardInstance,
+      // bountyInstances,
       bountyTotal,
       bountyDescription,
       voteDeposit,
@@ -171,7 +174,7 @@ class BountyBoard extends Component {
     const convertedchallengeDuration = challengeDuration * 3600;
     const convertedvoteDuration = voteDuration * 3600;
 
-    const result = await parentContract.methods
+    const result = await bountyBoardInstance.methods
       .createBountyContract(
         convertedBountyTotal,
         bountyDescription,
@@ -187,10 +190,10 @@ class BountyBoard extends Component {
     console.log(result);
 
     let address = result.events.LogAddress.returnValues[0];
-    let childInstance = this.getChildInstance(web3, accounts, address);
+    let bountyInstance = this.getBounty(web3, accounts, address);
 
     this.setState({
-      childContracts: childContracts.push(childInstance),
+      bountyInstances: [...this.state.bountyInstances, bountyInstance],
       bountyTotal: '',
       bountyDescription: '',
       voteDeposit: '',
@@ -221,22 +224,44 @@ class BountyBoard extends Component {
 
       console.log(ipfsHash);
       instance.methods.submitChallenge(ipfsHash).send({ from: accounts[0] });
+
+      this.redirectToBounty(bountyAddress);
     };
   };
+
+  redirectToBounty(bountyAddress) {
+    this.setState({
+      currentBountyAddress: bountyAddress,
+      redirect: true
+    });
+  }
 
   render() {
     const {
       web3,
-      childrenContractDetails,
+      bountyDetails,
       bountyTotal,
       bountyDescription,
       voteDeposit,
       challengeDuration,
-      voteDuration
+      voteDuration,
+      currentBountyAddress,
+      redirect
     } = this.state;
 
-    if (!web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+    // if (!web3) {
+    //   return <div>Loading Web3, accounts, and contract...</div>;
+    // }
+
+    if (redirect) {
+      return (
+        <Redirect
+          to={{
+            pathname: `/bounty/${currentBountyAddress}`,
+            state: { web3: web3, bountyAddress: currentBountyAddress }
+          }}
+        />
+      );
     }
 
     return (
@@ -256,8 +281,9 @@ class BountyBoard extends Component {
         />
 
         <BountyList
-          state={{ childrenContractDetails }}
+          state={{ bountyDetails }}
           uploadFile={this.uploadFile}
+          redirectToBounty={this.redirectToBounty}
         />
       </div>
     );

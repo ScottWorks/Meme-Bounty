@@ -36,7 +36,7 @@ contract Bounty {
     address private bountyWinner;
 
     struct Challenge {
-        string[] ipfsHash;
+        string ipfsUrl;
         uint submissionTimestamp;
         uint upVotes;
         address[] voted;
@@ -193,12 +193,22 @@ contract Bounty {
     /** @dev Returns array containing challenger addresses
     *   @return array of challenger addresses
     */
-    function getAllChallengerIds() 
+    function getAllChallengerAddresses() 
     public
     view 
     returns(address[])
     {
         return challengerAddresses;
+    }
+
+    function getIpfsUrl(address _challengerAddress)
+    public
+    view
+    returns(string)
+    {  
+        Challenge storage _challenger = challengerAddress[_challengerAddress];
+
+        return _challenger.ipfsUrl;
     }
     
     function getUpvoteCount(address _challengerAddress)
@@ -238,19 +248,17 @@ contract Bounty {
 
 
     /** @dev Maps sender address to deposit, IPFS Hash, timestamp, upVotes, and an array of voter addresses. Stores ETH deposited and updates the challenger addresss array
-    *   @param _ipfsHash - Hash of content submitted to IPFS
+    *   @param _ipfsUrl - URL of content submitted to IPFS
     */
-    function submitChallenge(string _ipfsHash) 
+    function submitChallenge(string _ipfsUrl) 
     public
     // isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
 
-        _challenger.ipfsHash.push(_ipfsHash);
+        _challenger.ipfsUrl = _ipfsUrl;
         _challenger.submissionTimestamp = now;
         challengerAddresses.push(msg.sender);
-        
-        emit LogAddressArraySize(challengerAddresses.length);
     }   
 
 

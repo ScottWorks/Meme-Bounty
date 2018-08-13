@@ -1,60 +1,77 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
 import getWeb3 from '../../utils/getWeb3';
 import getContractInstance from '../../utils/getContractInstance';
+
 import BountyContract from '../../contracts/Bounty.json';
 
 import './Bounty.css';
 
 class Bounty extends Component {
-  state = {
-    web3: null,
-    accounts: null,
-    contract: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      web3: null,
+      accounts: null,
+      bountyInstance: null,
+      ipfsUrls: []
+    };
+  }
 
-  componentDidMount = async () => {
-    try {
-      const web3 = await getWeb3();
-
-      const accounts = await web3.eth.getAccounts();
-
-      const contract = await getContractInstance(web3, BountyContract);
-
-      this.setState({
-        web3,
-        accounts,
-        contract
-      });
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
-      );
-      console.log(error);
+  async componentDidMount() {
+    if (typeof this.props.location.state === 'undefined') {
+      console.log('fuck');
+      return null;
     }
-  };
+    const { bountyAddress, web3 } = this.props.location.state;
 
-  // runExample = async () => {
-  //   const { accounts, contract } = this.state;
+    const accounts = await web3.eth.getAccounts();
+    const bountyInstance = await getContractInstance(
+      web3,
+      BountyContract,
+      bountyAddress
+    );
 
-  //   // Stores a given value, 5 by default.
-  //   await contract.methods.set(5).send({ from: accounts[0] });
+    const challengerAddresses = await bountyInstance.methods
+      .getAllChallengerAddresses()
+      .call({ from: accounts[0] });
 
-  //   // Get the value from the contract to prove it worked.
-  //   const response = await contract.methods.get().call({ from: accounts[0] });
+    challengerAddresses.forEach((challengerAddress) => {
+      this.getIpfsUrl(challengerAddress, accounts, bountyInstance);
+    });
 
-  //   // Update state with the result.
-  //   this.setState({ storageValue: response });
-  // };
+    this.setState({
+      web3,
+      accounts,
+      bountyInstance
+    });
+  }
+
+  async getIpfsUrl(challengerAddress, accounts, bountyInstance) {
+    let ipfsUrl = await bountyInstance.methods
+      .getIpfsUrl(challengerAddress)
+      .call({ from: accounts[0] });
+
+    this.setState({
+      ipfsUrls: [...this.state.ipfsUrls, ipfsUrl]
+    });
+  }
 
   render() {
-    // if (!this.state.web3) {
-    //   return <div>Loading Web3, accounts, and contract...</div>;
-    // }
+    const { web3 } = this.state;
 
     return (
-      <div className="App">
+      <div className="Bounty">
         <h1>Bounty</h1>
+        <Link
+          to={{
+            pathname: `/`,
+            state: { web3: web3 }
+          }}
+        >
+          Home
+        </Link>
       </div>
     );
   }

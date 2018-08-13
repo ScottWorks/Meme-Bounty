@@ -7,6 +7,6 @@ import Bounty from './components/bounty/Bounty';
 export default (
   <Switch>
     <Route exact path="/" component={BountyBoard} />
-    <Route path="/bounty" component={Bounty} />
+    <Route path="/bounty/:bountyAddress" component={Bounty} />
   </Switch>
 );
