@@ -4,10 +4,16 @@ function ChallengeCard(props) {
   const { upVoteChallenge } = props;
   const { elem } = props.data;
 
+  console.log(elem);
+
   return (
     <div>
-      <img src={elem} />
-      <input type="button" value="UpVote" onClick={() => upVoteChallenge()} />
+      <img src={elem.ipfsUrl} />
+      <input
+        type="button"
+        value="UpVote"
+        onClick={() => upVoteChallenge(elem.challengerAddress)}
+      />
     </div>
   );
 }

@@ -212,14 +212,14 @@ contract Bounty {
         return _challenger.ipfsUrl;
     }
     
-    function getUpvoteCount(address _challengerAddress)
-    public
-    view
-    returns(uint)
-    {
-        Challenge storage _challenger = challengerAddress[_challengerAddress];
-        return _challenger.upVotes;
-    }
+    // function getUpvoteCount(address _challengerAddress)
+    // public
+    // view
+    // returns(uint)
+    // {
+    //     Challenge storage _challenger = challengerAddress[_challengerAddress];
+    //     return _challenger.upVotes;
+    // }
 
     function getBountyWinner()
     public

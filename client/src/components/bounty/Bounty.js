@@ -60,19 +60,48 @@ class Bounty extends Component {
       .call({ from: accounts[0] });
 
     this.setState({
-      ipfsUrls: [...this.state.ipfsUrls, ipfsUrl]
+      ipfsUrls: [...this.state.ipfsUrls, { challengerAddress, ipfsUrl }]
     });
   };
 
-  upVoteChallenge = async () => {
+  upVoteChallenge = async (challengerAddress) => {
     const { web3, accounts, bountyDetails, bountyInstance } = this.state;
-
-    console.log(bountyDetails.voterDeposit);
 
     await bountyInstance.methods.submitVoteDeposit().send({
       from: accounts[0],
       value: web3.utils.toWei(bountyDetails.voterDeposit, 'ether')
     });
+
+    this.submitCommit(challengerAddress);
+  };
+
+  submitCommit = async (challengerAddress) => {
+    const { web3, accounts, bountyInstance } = this.state;
+
+    let salt = this.generateSalt();
+
+    console.log(challengerAddress, salt);
+
+    const commit = web3.utils.soliditySha3(
+      { type: 'bytes20', value: `${challengerAddress}` },
+      { type: 'uint', value: `${salt}` }
+    );
+
+    await bountyInstance.methods
+      .submitCommit(commit)
+      .call({ from: accounts[0] });
+
+    this.storeCommit(challengerAddress, salt);
+  };
+
+  generateSalt = () => {
+    return Math.floor(Math.random() * 100000 + 1);
+  };
+
+  storeCommit = (challengerAddress, salt) => {
+    localStorage.setItem(challengerAddress, salt);
+
+    alert(localStorage.getItem(challengerAddress));
   };
 
   render() {
