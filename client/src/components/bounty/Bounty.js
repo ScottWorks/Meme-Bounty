@@ -80,29 +80,44 @@ class Bounty extends Component {
 
     let salt = this.generateSalt();
 
-    console.log(challengerAddress, salt);
-
     const commit = web3.utils.soliditySha3(
       { type: 'bytes20', value: `${challengerAddress}` },
       { type: 'uint', value: `${salt}` }
     );
 
+    this.storeCommit(challengerAddress, salt);
+
     await bountyInstance.methods
       .submitCommit(commit)
       .call({ from: accounts[0] });
-
-    this.storeCommit(challengerAddress, salt);
   };
 
   generateSalt = () => {
-    return Math.floor(Math.random() * 100000 + 1);
+    return Math.floor(Math.random() * 10000000 + 1);
   };
 
   storeCommit = (challengerAddress, salt) => {
-    localStorage.setItem(challengerAddress, salt);
+    let data = [];
 
-    alert(localStorage.getItem(challengerAddress));
+    data = JSON.parse(localStorage.getItem(challengerAddress));
+
+    if (!data) {
+      data = [];
+      data = [...data, salt];
+      console.log(JSON.stringify(data));
+      localStorage.setItem(challengerAddress, JSON.stringify(data));
+    } else {
+      data = [...data, salt];
+      console.log(JSON.stringify(data));
+      localStorage.setItem(challengerAddress, JSON.stringify(data));
+    }
+
+    console.log(JSON.parse(localStorage.getItem(challengerAddress)));
   };
+
+  // revealCommit = () => {};
+
+  getCommit;
 
   render() {
     const { ipfsUrls } = this.state;
