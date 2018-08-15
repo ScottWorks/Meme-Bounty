@@ -9,7 +9,8 @@ contract BountyBoard {
     address[] bountyContractAddresses;
     mapping(address => Bounty) bountyContracts; 
  
-    event LogAddress(address);
+    event LogAddress(address bountyContract);
+
 
 
 // =================
