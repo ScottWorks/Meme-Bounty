@@ -1,11 +1,17 @@
 pragma solidity ^0.4.18;
 
+import "../libraries/SafeMath.sol";
+
 import "./Bounty.sol";
 
 contract BountyBoard {
 
     Bounty bountyContract;
- 
+
+    using SafeMath for uint256;
+    
+    uint c = 0;
+
     address[] bountyContractAddresses;
     mapping(address => Bounty) bountyContracts; 
  
@@ -18,6 +24,21 @@ contract BountyBoard {
 // =================
 
 
+
+    function setMath(uint a, uint b)
+    public
+    returns(uint)
+    {
+        c = a.mul(b);
+    }
+
+    function getMath()
+    public
+    view
+    returns(uint)
+    {
+        return c;
+    }
 
     function getAllBountyAddresses() 
     public 

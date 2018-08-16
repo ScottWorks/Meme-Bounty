@@ -1,8 +1,12 @@
 pragma solidity ^0.4.18;
 
-contract Bounty {
+import "../libraries/SafeMath.sol";
+import "../libraries/ReentrancyGuard.sol";
 
 
+contract Bounty is ReentrancyGuard {
+
+    using SafeMath for uint256;
 
 // =========
 // VARIABLES
@@ -172,7 +176,6 @@ contract Bounty {
         uint
     )
     {
-        // getStatus();
 
         return(            
             address(this),
@@ -224,7 +227,7 @@ contract Bounty {
     function getBountyWinner()
     public
     view
-    // isWithdrawlPeriod
+    isWithdrawlPeriod
     returns(
         address,
         uint, 
@@ -253,7 +256,7 @@ contract Bounty {
     */
     function submitChallenge(string _ipfsUrl) 
     public
-    // isChallengePeriod
+    isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
         
@@ -276,7 +279,7 @@ contract Bounty {
     function submitVoteDeposit()
     public
     payable
-    // isCommitPeriod
+    isCommitPeriod
     {
         require(msg.value >= voterDeposit, "Insufficient funds");
 
@@ -291,7 +294,7 @@ contract Bounty {
 
     function submitCommit(bytes32 _commitHash) 
     public 
-    // isCommitPeriod
+    isCommitPeriod
     {
         Vote storage _voter = voter[msg.sender];
 
@@ -304,8 +307,7 @@ contract Bounty {
 
     function revealCommit(bytes20 _challengerAddress, uint salt) 
     public 
-    // isRevealPeriod
-    returns(address)
+    isRevealPeriod
     {
 
         Vote storage _voter = voter[msg.sender];
@@ -328,7 +330,7 @@ contract Bounty {
         _challenger.upVotes++; 
         _challenger.voted.push(msg.sender);
 
-        return declareWinner(address(_challengerAddress));
+        declareWinner(address(_challengerAddress));
     }
 
 
@@ -342,7 +344,8 @@ contract Bounty {
     function withdrawFunds()
     public
     payable
-    // isWithdrawlPeriod
+    isWithdrawlPeriod
+    nonReentrant
     {
         if(msg.sender == bountyWinner){
             bountyWinner.transfer(posterDeposit);
@@ -381,7 +384,7 @@ contract Bounty {
 
     function declareWinner(address _challengerAddress) 
     private 
-    returns(address)
+    isWithdrawlPeriod
     {
         Challenge storage _challenger = challengerAddress[_challengerAddress];
         Challenge storage winner = challengerAddress[bountyWinner];
@@ -393,7 +396,5 @@ contract Bounty {
                 bountyWinner = _challengerAddress;
             } 
         }
-
-        return bountyWinner;
     }
 }

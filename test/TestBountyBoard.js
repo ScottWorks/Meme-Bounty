@@ -10,16 +10,12 @@ contract('BountyBoard', async (accounts) => {
   });
 
   it('Bounty contract address array should be empty', async () => {
-    // const instance = await BountyBoard.deployed();
-
     let bountyAddressArray = await contract.getAllBountyAddresses.call();
 
     assert.lengthOf(bountyAddressArray, 0);
   });
 
   it('Bounty contract should fail if incorrect amount is sent.', async () => {
-    // const instance = await BountyBoard.deployed();
-
     try {
       await contract.createBountyContract(
         300000000000000000,
@@ -30,20 +26,21 @@ contract('BountyBoard', async (accounts) => {
         { from: accounts[0], value: 100000000000000000 }
       );
     } catch (error) {
-      assert.ok(
-        error instanceof Error,
-        '... contract should throw an exception'
-      );
+      assert.ok(error instanceof Error, 'should throw an error message');
     }
+
+    let bountyAddressArray = await contract.getAllBountyAddresses.call();
+
+    assert.lengthOf(bountyAddressArray, 0);
   });
 
-  it('Bounty contract should fail if description is the wrong type.', async () => {
-    // const contract = await BountyBoard.deployed();
+  it('Bounty contract should fail if poster deposit is the wrong type.', async () => {
+    const num = 300000000000000000;
 
     try {
       await contract.createBountyContract(
-        300000000000000000,
-        12345,
+        num.toString(),
+        'Poster deposit is the wrong type',
         10000000000000000,
         86400,
         86400,
@@ -52,11 +49,13 @@ contract('BountyBoard', async (accounts) => {
     } catch (error) {
       assert.ok(error instanceof Error, 'should throw an error message');
     }
+
+    let bountyAddressArray = await contract.getAllBountyAddresses.call();
+    console.log(bountyAddressArray);
+    assert.lengthOf(bountyAddressArray, 0);
   });
 
   it('Bounty contract emits an event containing the address of the bounty contract', async () => {
-    // const contract = await BountyBoard.deployed();
-
     let eventEmitted = false;
 
     let event = contract.LogAddress();
@@ -76,16 +75,17 @@ contract('BountyBoard', async (accounts) => {
       { from: accounts[0], value: 300000000000000000 }
     );
 
+    let bountyAddressArray = await contract.getAllBountyAddresses.call();
+
     assert.equal(
       eventEmitted,
       true,
       'address event has been emitted successfully'
     );
+    assert.lengthOf(bountyAddressArray, 1);
   });
 
   it('Bounty contract should be created successfully.', async () => {
-    // const contract = await BountyBoard.deployed();
-
     await contract.createBountyContract(
       300000000000000000,
       'Bounty contract initialization test',
