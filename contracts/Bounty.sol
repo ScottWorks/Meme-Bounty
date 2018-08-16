@@ -15,6 +15,9 @@ contract Bounty is ReentrancyGuard {
 // =========
 
 
+
+    bytes32 storedHash;
+
     address ownerAddress;
     uint posterDeposit;
     uint creationTimestamp;
@@ -111,10 +114,12 @@ contract Bounty is ReentrancyGuard {
 
 
 
-    event LogAddress(address);
-    event LogString(bytes);
-    event LogHash(bytes20, bytes32, bytes32);
-    event LogAddressArraySize(uint);
+    event LogAddress(address); // FOR TESTING ONLY
+    event LogString(bytes); // FOR TESTING ONLY
+    event LogCommit(bytes32[]); // FOR TESTING ONLY
+    event LogAddressArraySize(uint); // FOR TESTING ONLY
+    event LogHash(bytes32, bytes32); // FOR TESTING ONLY
+    event LogBool(bool); // FOR TESTING ONLY
 
 
 
@@ -226,25 +231,32 @@ contract Bounty is ReentrancyGuard {
     //     return _challenger.upVotes;
     // }
 
-    function getBountyWinner()
+    // function getBountyWinner()
+    // public
+    // view
+    // isWithdrawalPeriod
+    // returns(
+    //     address,
+    //     uint, 
+    //     uint
+    // )
+    // {
+    //     Challenge storage winner = challengerAddress[bountyWinner];
+
+    //     return(
+    //         bountyWinner,
+    //         winner.submissionTimestamp,
+    //         winner.upVotes
+    //     );
+    // }
+
+    function getTime()
     public
     view
-    isWithdrawalPeriod
-    returns(
-        address,
-        uint, 
-        uint
-    )
+    returns(uint)
     {
-        Challenge storage winner = challengerAddress[bountyWinner];
-
-        return(
-            bountyWinner,
-            winner.submissionTimestamp,
-            winner.upVotes
-        );
+        return(now);
     }
-
 
 
 // ====================
@@ -316,23 +328,26 @@ contract Bounty is ReentrancyGuard {
         Challenge storage _challenger = challengerAddress[address(_challengerAddress)];
 
         bytes32 revealHash = keccak256(abi.encodePacked(_challengerAddress, salt));
-
+        
         bool flag = false; 
-       
+
         for(uint i = 0; i < _voter.commitHash.length; i++){
             if(_voter.commitHash[i] == revealHash){
+                storedHash = _voter.commitHash[i];
                 delete _voter.commitHash[i];
                 flag = true;
                 break;
             }
         }
 
+        // emit LogHash(revealHash, storedHash);
+
         require(flag, "Submitted entry does not match any stored commit hashes.");
 
         _challenger.upVotes++; 
         _challenger.voted.push(msg.sender);
 
-        declareWinner(address(_challengerAddress));
+        return declareWinner(address(_challengerAddress));
     }
 
 
@@ -386,7 +401,7 @@ contract Bounty is ReentrancyGuard {
 
     function declareWinner(address _challengerAddress) 
     private 
-    isWithdrawalPeriod
+    isRevealPeriod
     {
         Challenge storage _challenger = challengerAddress[_challengerAddress];
         Challenge storage winner = challengerAddress[bountyWinner];

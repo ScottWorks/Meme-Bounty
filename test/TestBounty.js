@@ -2,106 +2,139 @@ var Bounty = artifacts.require('./Bounty.sol');
 var BountyBoard = artifacts.require('./BountyBoard.sol');
 
 contract('Bounty', async (accounts) => {
-  // var contractAddress;
+  const poster = accounts[0];
+  const challenger = accounts[1];
+  const voter = accounts[2];
 
-  // beforeEach(function() {
-  //   return Bounty.new().then(function(instance) {
-  //     contractAddress = instance;
-  //   });
-  // });
+  const jsonrpc = '2.0';
+  const id = 0;
 
-  function timeTravel(time) {
-    var id = 0;
+  var parentContract;
+  var childContract;
 
-    return new Promise((resolve, reject) => {
-      web3.currentProvider.sendAsync(
-        {
-          jsonrpc: '2.0',
-          method: 'evm_increaseTime',
-          params: [time], // 86400 is num seconds in day
-          id: new Date().getTime()
-        },
-        (err1) => {
-          if (err1) {
-            console.log(err);
-            return reject(err1);
-          }
-
-          web3.currentProvider.sendAsync(
-            {
-              jsonrpc: '2.0',
-              method: 'evm_mine',
-              id: id++
-            },
-            (err2, result) => {
-              if (err2) {
-                console.log(err2);
-                return reject(err2);
-              }
-              return resolve(result);
-            }
-          );
-        }
-      );
-    });
-  }
-
-  it('Modifiers should change state of "Status" variable and allow function calls during corresponding time intervals.', async () => {
-    let parentContract = await BountyBoard.deployed();
+  const deploy = async () => {
+    parentContract = await BountyBoard.new();
 
     await parentContract.createBountyContract(
       300000000000000000,
-      'Initialize bounty contract',
+      'Bounty contract initialization test',
       10000000000000000,
       86400,
       86400,
-      { from: accounts[0], value: 300000000000000000 }
+      { from: poster, value: 300000000000000000 }
     );
 
     let bountyAddresses = await parentContract.getAllBountyAddresses();
-    let childContract = await Bounty.at(bountyAddresses[0]);
-    let statusChallenge;
+    childContract = await Bounty.at(bountyAddresses[0]);
+  };
 
-    statusChallenge = await childContract.getBountyParameters();
+  const send = (method, params = []) =>
+    web3.currentProvider.send({ id, jsonrpc, method, params });
 
-    console.log(statusChallenge[5].c[0]);
+  const timeTravel = async (seconds) => {
+    await send('evm_increaseTime', [seconds]);
+    await send('evm_mine');
+  };
+
+  beforeEach(deploy);
+
+  it('"Status" should default to 0 (Challenge)', async () => {
+    let statusChallenge = await childContract.getBountyParameters();
 
     assert.equal(
       statusChallenge[5].c[0],
       0,
       'Status should equal 0 (Challenge)'
     );
+  });
 
-    await timeTravel(86401 * 3);
+  it('Correct IPFS URL is returned', async () => {
+    await childContract.submitChallenge('12345', { from: challenger });
 
-    statusChallenge = await childContract.getBountyParameters();
+    let challengerAddresses = await childContract.getAllChallengerAddresses();
 
-    console.log(statusChallenge[5].c[0]);
+    let ipfsUrl = await childContract.getIpfsUrl(challengerAddresses[0]);
 
+    assert.equal(ipfsUrl, 12345, 'IPFS URL from contract matches ');
+  });
+
+  beforeEach(deploy);
+
+  it('"isCommitPeriod" modifier should change "Status" to 1 (Commit)', async () => {
+    await childContract.submitChallenge('12345', { from: challenger });
+
+    await timeTravel(86401);
+
+    await childContract.submitVoteDeposit({
+      from: voter,
+      value: 10000000000000000
+    });
+
+    let statusChallenge = await childContract.getBountyParameters();
     assert.equal(statusChallenge[5].c[0], 1, 'Status should equal 1 (Commit)');
   });
 
-  // it('Modifiers should allow function calls during corresponding time intervals.', async () => {
-  //   let parentContract = await BountyBoard.deployed();
+  beforeEach(deploy);
 
-  //   await parentContract.createBountyContract(
-  //     300000000000000000,
-  //     'Initialize bounty contract',
-  //     10000000000000000,
-  //     86400,
-  //     86400,
-  //     { from: accounts[0], value: 300000000000000000 }
-  //   );
+  it('"isRevealPeriod" modifier should change "Status" to 2 (Reveal)', async () => {
+    await childContract.submitChallenge('12345', { from: challenger });
 
-  //   let bountyAddresses = await parentContract.getAllBountyAddresses();
+    await timeTravel(86401);
 
-  //   let childContract = await Bounty.at(bountyAddresses[0]);
+    await childContract.submitVoteDeposit({
+      from: voter,
+      value: 10000000000000000
+    });
+    await childContract.submitCommit(
+      '0x474ba869830f6f6de3e63b111c2cdea42d1dfa74a4ae62704e0531cd0402e685',
+      { from: voter }
+    );
 
-  //   // Move to seperate test
-  //   // await childContract.submitChallenge(
-  //   //   'https://gateway.ipfs.io/ipfs/QmYjh5NsDc6LwU3394NbB42WpQbGVsueVSBmod5WACvpte'
-  //   // );
+    await timeTravel(86401);
 
-  //   timeTravel()
-  // });
+    await childContract.revealCommit(
+      '0xc5fdf4076b8f3a5357c5e395ab970b5b54098fef',
+      '12345',
+      { from: voter }
+    );
+
+    let statusChallenge = await childContract.getBountyParameters();
+    assert.equal(statusChallenge[5].c[0], 2, 'Status should equal 2 (Reveal)');
+  });
+
+  beforeEach(deploy);
+
+  it('"isWithdrawalPeriod" modifier should change "Status" to 3 (Withdrawal)', async () => {
+    await childContract.submitChallenge('12345', { from: challenger });
+
+    await timeTravel(86401);
+
+    await childContract.submitVoteDeposit({
+      from: voter,
+      value: 10000000000000000
+    });
+    await childContract.submitCommit(
+      '0x474ba869830f6f6de3e63b111c2cdea42d1dfa74a4ae62704e0531cd0402e685',
+      { from: voter }
+    );
+
+    await timeTravel(86401);
+
+    await childContract.revealCommit(
+      '0xc5fdf4076b8f3a5357c5e395ab970b5b54098fef',
+      '12345',
+      { from: voter }
+    );
+
+    await timeTravel(86401 * 2);
+
+    await childContract.withdrawFunds({ from: voter });
+
+    let statusChallenge = await childContract.getBountyParameters();
+    assert.equal(
+      statusChallenge[5].c[0],
+      3,
+      'Status should equal 3 (Withdrawal)'
+    );
+  });
 });
