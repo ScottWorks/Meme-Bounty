@@ -8,6 +8,8 @@ contract Bounty is ReentrancyGuard {
 
     using SafeMath for uint256;
 
+
+
 // =========
 // VARIABLES
 // =========
@@ -93,7 +95,7 @@ contract Bounty is ReentrancyGuard {
         _;
     }
     
-    modifier isWithdrawlPeriod(){
+    modifier isWithdrawalPeriod(){
         require(now > creationTimestamp + challengeDuration + voteDuration + 48 hours, "Polling period has not started.");
         if(status != Status.Withdraw){
             status = Status.Withdraw;
@@ -227,7 +229,7 @@ contract Bounty is ReentrancyGuard {
     function getBountyWinner()
     public
     view
-    isWithdrawlPeriod
+    isWithdrawalPeriod
     returns(
         address,
         uint, 
@@ -342,9 +344,9 @@ contract Bounty is ReentrancyGuard {
 
 
     function withdrawFunds()
-    public
+    external
     payable
-    isWithdrawlPeriod
+    isWithdrawalPeriod
     nonReentrant
     {
         if(msg.sender == bountyWinner){
@@ -384,7 +386,7 @@ contract Bounty is ReentrancyGuard {
 
     function declareWinner(address _challengerAddress) 
     private 
-    isWithdrawlPeriod
+    isWithdrawalPeriod
     {
         Challenge storage _challenger = challengerAddress[_challengerAddress];
         Challenge storage winner = challengerAddress[bountyWinner];

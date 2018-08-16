@@ -24,7 +24,7 @@ contract BountyBoard {
 // =================
 
 
-
+  
     function setMath(uint a, uint b)
     public
     returns(uint)
