@@ -12,7 +12,7 @@ contract('Bounty', async (accounts) => {
   var parentContract;
   var childContract;
 
-  const deploy = async () => {
+  beforeEach(async () => {
     parentContract = await BountyBoard.new();
 
     await parentContract.createBountyContract(
@@ -26,7 +26,7 @@ contract('Bounty', async (accounts) => {
 
     let bountyAddresses = await parentContract.getAllBountyAddresses();
     childContract = await Bounty.at(bountyAddresses[0]);
-  };
+  });
 
   const send = (method, params = []) =>
     web3.currentProvider.send({ id, jsonrpc, method, params });
@@ -35,8 +35,6 @@ contract('Bounty', async (accounts) => {
     await send('evm_increaseTime', [seconds]);
     await send('evm_mine');
   };
-
-  beforeEach(deploy);
 
   it('"Status" should default to 0 (Challenge)', async () => {
     let statusChallenge = await childContract.getBountyParameters();
@@ -58,8 +56,6 @@ contract('Bounty', async (accounts) => {
     assert.equal(ipfsUrl, 12345, 'IPFS URL from contract matches ');
   });
 
-  beforeEach(deploy);
-
   it('"isCommitPeriod" modifier should change "Status" to 1 (Commit)', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
 
@@ -73,8 +69,6 @@ contract('Bounty', async (accounts) => {
     let statusChallenge = await childContract.getBountyParameters();
     assert.equal(statusChallenge[5].c[0], 1, 'Status should equal 1 (Commit)');
   });
-
-  beforeEach(deploy);
 
   it('"isRevealPeriod" modifier should change "Status" to 2 (Reveal)', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
@@ -101,8 +95,6 @@ contract('Bounty', async (accounts) => {
     let statusChallenge = await childContract.getBountyParameters();
     assert.equal(statusChallenge[5].c[0], 2, 'Status should equal 2 (Reveal)');
   });
-
-  beforeEach(deploy);
 
   it('"isWithdrawalPeriod" modifier should change "Status" to 3 (Withdrawal)', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
