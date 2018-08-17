@@ -12,7 +12,7 @@ const getWeb3 = () =>
       if (alreadyInjected) {
         // Use Mist/MetaMask's provider.
         web3 = new Web3(web3.currentProvider);
-        console.log('Injected web3 detected.');
+        console.log(web3);
         resolve(web3);
       } else {
         // Fallback to localhost if no web3 injection. We've configured this to

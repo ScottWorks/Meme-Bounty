@@ -1,4 +1,6 @@
-## What is XBounty <LINK TO MEDIUM POST>
+## What is XBounty
+
+Click here to learn more!
 
 ## Installation
 

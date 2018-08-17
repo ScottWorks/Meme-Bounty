@@ -47,6 +47,8 @@ class BountyBoard extends Component {
         BountyBoardContract
       );
 
+      console.log(bountyBoardInstance);
+
       const bountyAddresses = await bountyBoardInstance.methods
         .getAllBountyAddresses()
         .call({ from: accounts[0] });
