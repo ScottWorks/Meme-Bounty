@@ -36,6 +36,9 @@ contract('Bounty', async (accounts) => {
     await send('evm_mine');
   };
 
+  // Rationale:
+  // Verifies that the 'Status' of the contract has been intialized to the correct default state.
+
   it('"Status" should default to 0 (Challenge)', async () => {
     let statusChallenge = await childContract.getBountyParameters();
 
@@ -46,6 +49,9 @@ contract('Bounty', async (accounts) => {
     );
   });
 
+  // Rationale:
+  // Verifies that the 'getIpfsUrl()' method returns the IPFS URL corresponding to the correct challenger address.
+
   it('Correct IPFS URL is returned', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
 
@@ -55,6 +61,9 @@ contract('Bounty', async (accounts) => {
 
     assert.equal(ipfsUrl, 12345, 'IPFS URL from contract matches ');
   });
+
+  // Rationale:
+  // Verifies that the 'isCommitPeriod' modifier updates the 'Status' state to 'Commit' during the expected time interval
 
   it('"isCommitPeriod" modifier should change "Status" to 1 (Commit)', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
@@ -69,6 +78,9 @@ contract('Bounty', async (accounts) => {
     let statusChallenge = await childContract.getBountyParameters();
     assert.equal(statusChallenge[5].c[0], 1, 'Status should equal 1 (Commit)');
   });
+
+  // Rationale:
+  // Verifies that the 'isRevearlPeriod' modifier updates the 'Status' state to 'Reveal' during the expected time interval
 
   it('"isRevealPeriod" modifier should change "Status" to 2 (Reveal)', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
@@ -95,6 +107,9 @@ contract('Bounty', async (accounts) => {
     let statusChallenge = await childContract.getBountyParameters();
     assert.equal(statusChallenge[5].c[0], 2, 'Status should equal 2 (Reveal)');
   });
+
+  // Rationale:
+  // Verifies that the 'isWithdrawalPeriod' modifier updates the 'Status' state to 'Withdrawal' during the expected time interval
 
   it('"isWithdrawalPeriod" modifier should change "Status" to 3 (Withdrawal)', async () => {
     await childContract.submitChallenge('12345', { from: challenger });
