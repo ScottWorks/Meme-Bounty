@@ -16,8 +16,6 @@ contract Bounty is ReentrancyGuard {
 
 
 
-    bytes32 storedHash;
-
     address ownerAddress;
     uint posterDeposit;
     uint creationTimestamp;
@@ -71,6 +69,7 @@ contract Bounty is ReentrancyGuard {
 // ==================
 
 
+    ///@dev locks out function from being called outside of Challenge period and updates state of status (if needed)
 
     modifier isChallengePeriod(){
         require(now < creationTimestamp + challengeDuration, "Challenge period has ended.");
@@ -79,6 +78,9 @@ contract Bounty is ReentrancyGuard {
         }
         _;
     }
+
+
+    ///@dev locks out function from being called outside of Commit period and updates state of status (if needed)
 
     modifier isCommitPeriod(){
         require(now > creationTimestamp + challengeDuration, "Commit period has not started.");
@@ -89,6 +91,9 @@ contract Bounty is ReentrancyGuard {
         _;
     }
 
+
+    ///@dev locks out function from being called outside of Reveal period and updates state of status (if needed)
+
     modifier isRevealPeriod(){
         require(now > creationTimestamp + challengeDuration + voteDuration, "Reveal period has not started.");
         require(now < creationTimestamp + challengeDuration + voteDuration + 48 hours, "Reveal period has ended.");
@@ -97,6 +102,9 @@ contract Bounty is ReentrancyGuard {
         }        
         _;
     }
+
+
+    ///@dev locks out function from being called outside of Withdrawal period and updates state of status (if needed)
     
     modifier isWithdrawalPeriod(){
         require(now > creationTimestamp + challengeDuration + voteDuration + 48 hours, "Polling period has not started.");
@@ -164,6 +172,10 @@ contract Bounty is ReentrancyGuard {
 
 
 
+    /** @dev provides the bouty parameters
+    *   @return bounty parameters
+    */
+
     function getBountyParameters()
     public
     view
@@ -201,9 +213,11 @@ contract Bounty is ReentrancyGuard {
         );
     }
 
-    /** @dev Returns array containing challenger addresses
+
+    /** @dev provides an array of challenger addresses to caller
     *   @return array of challenger addresses
     */
+
     function getAllChallengerAddresses() 
     public
     view 
@@ -211,6 +225,12 @@ contract Bounty is ReentrancyGuard {
     {
         return challengerAddresses;
     }
+
+
+    /** @dev provides the IPFS URL corresponding to the challenger address provided
+    *   @param _challengerAddress - the address of the challenger
+    *   @return IPFS URL corresponging to the challenger
+    */
 
     function getIpfsUrl(address _challengerAddress)
     public
@@ -250,13 +270,13 @@ contract Bounty is ReentrancyGuard {
     //     );
     // }
 
-    function getTime()
-    public
-    view
-    returns(uint)
-    {
-        return(now);
-    }
+    // function getTime()
+    // public
+    // view
+    // returns(uint)
+    // {
+    //     return(now);
+    // }
 
 
 // ====================
@@ -265,21 +285,24 @@ contract Bounty is ReentrancyGuard {
 
 
 
-    /** @dev Maps sender address to deposit, IPFS Hash, timestamp, upVotes, and an array of voter addresses. Stores ETH deposited and updates the challenger addresss array
+    /** @dev Maps sender address to Challenge Struct then adds the IPFS URL, submission timestamp, and indicates the challenger has submitted content already. The address of the challenger is also added to an array that contains all challenger addresses.
     *   @param _ipfsUrl - URL of content submitted to IPFS
     */
+
     function submitChallenge(string _ipfsUrl) 
     public
     isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
         
+
+        // Checks that the challenger has not already submitted a vote to mitigate spam
         require(!_challenger.hasSubmitted, "Only one submission per Challenger");
 
         _challenger.ipfsUrl = _ipfsUrl;
         _challenger.submissionTimestamp = now;
-        challengerAddresses.push(msg.sender);
         _challenger.hasSubmitted = true;
+        challengerAddresses.push(msg.sender);
     }   
 
 
@@ -289,6 +312,9 @@ contract Bounty is ReentrancyGuard {
 // ===============
 
 
+
+    /** @dev user sends correct amount of ETH (should be equal to or greater than the 'VoterDeposit'), in return they are allowed to submit one vote
+    */
 
     function submitVoteDeposit()
     public
@@ -306,18 +332,32 @@ contract Bounty is ReentrancyGuard {
         totalVoterCount = voterAddresses.length;
     }
 
+
+    /** @dev user creates a commit hash and submits the result and stores it in an array associated with the voters address. The number of votes availabe is then decremented.
+    *   @param _commitHash - the hash of the challengerAddress and salt
+    */
+
     function submitCommit(bytes32 _commitHash) 
     public 
     isCommitPeriod
     {
         Vote storage _voter = voter[msg.sender];
 
+        // Checks that the voter has enough available votes
         require(_voter.upVotesAvailable > 0, "Not enough votes available");
+
+        // Checks that the voter has deposited enough funds already deposited 
         require(_voter.deposit >= voterDeposit * _voter.upVotesAvailable, "Insufficient funds");
 
         _voter.commitHash.push(_commitHash);
         _voter.upVotesAvailable--;
     }
+
+
+    /** @dev hashes the provided address and salt then matches the result to a value stored in commithash array, If a commit mataches the hash then the commit is removed from the array, the challenger is awarded an upvote and the voter is added to the challengers voted array, 
+    *   @param _challengerAddress - the address of the challenger
+    *   @param salt -a random number generated on the client
+    */
 
     function revealCommit(bytes20 _challengerAddress, uint salt) 
     public 
@@ -333,21 +373,19 @@ contract Bounty is ReentrancyGuard {
 
         for(uint i = 0; i < _voter.commitHash.length; i++){
             if(_voter.commitHash[i] == revealHash){
-                storedHash = _voter.commitHash[i];
                 delete _voter.commitHash[i];
                 flag = true;
                 break;
             }
         }
 
-        // emit LogHash(revealHash, storedHash);
-
+        // Checks that the hash matches at one of the commit hashes stored in the commitHash array 
         require(flag, "Submitted entry does not match any stored commit hashes.");
 
         _challenger.upVotes++; 
         _challenger.voted.push(msg.sender);
 
-        return declareWinner(address(_challengerAddress));
+        declareWinner(address(_challengerAddress));
     }
 
 
@@ -357,6 +395,10 @@ contract Bounty is ReentrancyGuard {
 // ==================
 
 
+
+    /** @dev disburses winnings to the challenger or voter. In the case of the voter the address of the voter is checked against the addresses stored in the challengers voted array, If the address matches then it is removed from the voted array, funds are transferred to the caller.
+    * NOTE: The 'nonReentrant' modifier ensures that the function is called only once. 
+    */
 
     function withdrawFunds()
     external
@@ -385,6 +427,7 @@ contract Bounty is ReentrancyGuard {
                 }
             }
 
+            // Checks that the caller address matches an address stored in the voted array.
             require(flag, "Sorry, you bet on the wrong horse...");
             
             msg.sender.transfer(voterPayout);
@@ -398,6 +441,9 @@ contract Bounty is ReentrancyGuard {
 // ================
 
 
+    /** @dev declares a winner by checking if the current challenger has more upvotes than the challenger with the highest number of upvotes. If there is a tie the challenger who submitted their content first is declared the winner.
+    *   @param _challengerAddress - the address of the challenger
+    */
 
     function declareWinner(address _challengerAddress) 
     private 
