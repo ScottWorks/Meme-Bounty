@@ -1,7 +1,7 @@
 require('babel-register')({
   ignore: /node_modules\/(?!openzeppelin-solidity\/test\/helpers)/
-})
-require('babel-polyfill')
+});
+require('babel-polyfill');
 
 // See <http://truffleframework.com/docs/advanced/configuration>
 // to customize your Truffle configuration!
@@ -9,7 +9,7 @@ module.exports = {
   networks: {
     development: {
       host: 'localhost',
-      port: 8545,
+      port: 9545,
       network_id: '*' // Match any network id
     }
   },
@@ -25,4 +25,4 @@ module.exports = {
       runs: 200
     }
   }
-}
+};

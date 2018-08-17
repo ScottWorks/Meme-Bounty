@@ -6,7 +6,7 @@ const ipfs = new ipfsAPI({
   protocol: 'https'
 });
 
-export function ipfsUpload(buffer) {
+const ipfsUpload = function(buffer) {
   return new Promise(function(resolve, reject) {
     ipfs.add(buffer, (err, ipfsHash) => {
       if (err) {
@@ -20,4 +20,6 @@ export function ipfsUpload(buffer) {
       }
     });
   });
-}
+};
+
+export default ipfsUpload;

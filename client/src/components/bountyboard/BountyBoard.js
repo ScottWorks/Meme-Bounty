@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import getContractInstance from '../../utils/getContractInstance';
 import getWeb3 from '../../utils/getWeb3';
-import { ipfsUpload } from '../../utils/ipfs';
+import ipfsUpload from '../../utils/ipfs';
 import timeConversion from '../../utils/timeConversion';
 
 import BountyBoardContract from '../../contracts/BountyBoard.json';
@@ -19,7 +19,7 @@ class BountyBoard extends Component {
     super(props);
     this.state = {
       web3: null,
-      accounts: null,
+      account: null,
       bountyBoardInstance: null,
       bountyInstances: [],
       bountyDetails: [],
@@ -42,36 +42,36 @@ class BountyBoard extends Component {
     try {
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
+      const account = accounts[0];
+
       const bountyBoardInstance = await getContractInstance(
         web3,
         BountyBoardContract
       );
 
-      console.log(bountyBoardInstance);
-
       const bountyAddresses = await bountyBoardInstance.methods
         .getAllBountyAddresses()
-        .call({ from: accounts[0] });
+        .call({ from: account });
 
       bountyAddresses.forEach((bountyAddress) => {
-        return this.getBounty(web3, accounts, bountyAddress);
+        return this.getBounty(web3, account, bountyAddress);
       });
 
       this.setState({
         web3,
-        accounts,
+        account,
         bountyBoardInstance
       });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
+        `Failed to load web3, account, or contract. Check console for details.`
       );
       console.log(error);
     }
   };
 
-  getBounty = async (web3, accounts, bountyAddress) => {
+  getBounty = async (web3, account, bountyAddress) => {
     const instance = await getContractInstance(
       web3,
       BountyContract,
@@ -80,7 +80,7 @@ class BountyBoard extends Component {
 
     const result = await instance.methods
       .getBountyParameters()
-      .call({ from: accounts[0] });
+      .call({ from: account });
 
     let formattedData = await this.formatBountyData(result);
 
@@ -149,7 +149,7 @@ class BountyBoard extends Component {
 
     const {
       web3,
-      accounts,
+      account,
       bountyBoardInstance,
       bountyTotal,
       bountyDescription,
@@ -172,14 +172,14 @@ class BountyBoard extends Component {
         convertedvoteDuration
       )
       .send({
-        from: accounts[0],
+        from: account,
         value: convertedBountyTotal
       });
 
     console.log(result);
 
     let address = result.events.LogAddress.returnValues[0];
-    let bountyInstance = this.getBounty(web3, accounts, address);
+    let bountyInstance = this.getBounty(web3, account, address);
 
     this.setState({
       bountyInstances: [...this.state.bountyInstances, bountyInstance],
@@ -195,7 +195,7 @@ class BountyBoard extends Component {
     event.stopPropagation();
     event.preventDefault();
 
-    const { web3, accounts } = this.state;
+    const { web3, account } = this.state;
 
     const file = event.target.files[0];
     let reader = new window.FileReader();
@@ -203,7 +203,7 @@ class BountyBoard extends Component {
     reader.onloadend = async () => {
       const buffer = await Buffer.from(reader.result);
 
-      const ipfsHash = await ipfsUpload(buffer);
+      const ipfsURL = await ipfsUpload(buffer);
 
       const instance = await getContractInstance(
         web3,
@@ -211,16 +211,11 @@ class BountyBoard extends Component {
         details.bountyAddress
       );
 
-      console.log(ipfsHash);
-      instance.methods.submitChallenge(ipfsHash).send({ from: accounts[0] });
-
-      this.redirectToBounty(details);
+      instance.methods.submitChallenge(ipfsURL).send({ from: account });
     };
   };
 
   redirectToBounty(details) {
-    console.log(details);
-
     this.setState({
       currentBountyDetails: details,
       redirect: true
@@ -241,7 +236,7 @@ class BountyBoard extends Component {
     } = this.state;
 
     // if (!web3) {
-    //   return <div>Loading Web3, accounts, and contract...</div>;
+    //   return <div>Loading Web3, account, and contract...</div>;
     // }
 
     if (redirect) {

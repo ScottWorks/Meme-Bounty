@@ -291,18 +291,27 @@ contract Bounty is ReentrancyGuard {
 
     function submitChallenge(string _ipfsUrl) 
     public
-    isChallengePeriod
+    // isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
+
+        bool flag = false;
+
+        // Prevents duplicate addresses from populating challengerAddresses array
+        for(uint i = 0; i < challengerAddresses.length; i++){
+            if(challengerAddresses[i] == msg.sender){
+                flag = true; 
+                break;
+            }
+        }
+
+        if(!flag){
+            challengerAddresses.push(msg.sender);
+        }
         
-
-        // Checks that the challenger has not already submitted a vote to mitigate spam
-        require(!_challenger.hasSubmitted, "Only one submission per Challenger");
-
         _challenger.ipfsUrl = _ipfsUrl;
         _challenger.submissionTimestamp = now;
         _challenger.hasSubmitted = true;
-        challengerAddresses.push(msg.sender);
     }   
 
 
@@ -319,7 +328,7 @@ contract Bounty is ReentrancyGuard {
     function submitVoteDeposit()
     public
     payable
-    isCommitPeriod
+    // isCommitPeriod
     {
         require(msg.value >= voterDeposit, "Insufficient funds");
 
@@ -339,7 +348,7 @@ contract Bounty is ReentrancyGuard {
 
     function submitCommit(bytes32 _commitHash) 
     public 
-    isCommitPeriod
+    // isCommitPeriod
     {
         Vote storage _voter = voter[msg.sender];
 
@@ -361,7 +370,7 @@ contract Bounty is ReentrancyGuard {
 
     function revealCommit(bytes20 _challengerAddress, uint salt) 
     public 
-    isRevealPeriod
+    // isRevealPeriod
     {
 
         Vote storage _voter = voter[msg.sender];
@@ -403,7 +412,7 @@ contract Bounty is ReentrancyGuard {
     function withdrawFunds()
     external
     payable
-    isWithdrawalPeriod
+    // isWithdrawalPeriod
     nonReentrant
     {
         if(msg.sender == bountyWinner){
@@ -441,13 +450,14 @@ contract Bounty is ReentrancyGuard {
 // ================
 
 
+
     /** @dev declares a winner by checking if the current challenger has more upvotes than the challenger with the highest number of upvotes. If there is a tie the challenger who submitted their content first is declared the winner.
     *   @param _challengerAddress - the address of the challenger
     */
 
     function declareWinner(address _challengerAddress) 
     private 
-    isRevealPeriod
+    // isRevealPeriod
     {
         Challenge storage _challenger = challengerAddress[_challengerAddress];
         Challenge storage winner = challengerAddress[bountyWinner];

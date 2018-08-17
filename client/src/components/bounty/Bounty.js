@@ -14,7 +14,7 @@ class Bounty extends Component {
     super(props);
     this.state = {
       web3: null,
-      accounts: null,
+      account: null,
       bountyDetails: null,
       bountyInstance: null,
       ipfsUrls: []
@@ -32,6 +32,8 @@ class Bounty extends Component {
     const { bountyDetails, web3 } = this.props.location.state;
 
     const accounts = await web3.eth.getAccounts();
+    const account = accounts[0];
+
     const bountyInstance = await getContractInstance(
       web3,
       BountyContract,
@@ -40,24 +42,26 @@ class Bounty extends Component {
 
     const challengerAddresses = await bountyInstance.methods
       .getAllChallengerAddresses()
-      .call({ from: accounts[0] });
+      .call({ from: account });
+
+    console.log(challengerAddresses);
 
     challengerAddresses.forEach((challengerAddress) => {
-      this.getIpfsUrl(challengerAddress, accounts, bountyInstance);
+      this.getIpfsUrl(challengerAddress, account, bountyInstance);
     });
 
     this.setState({
       web3,
-      accounts,
+      account,
       bountyDetails,
       bountyInstance
     });
   };
 
-  getIpfsUrl = async (challengerAddress, accounts, bountyInstance) => {
+  getIpfsUrl = async (challengerAddress, account, bountyInstance) => {
     let ipfsUrl = await bountyInstance.methods
       .getIpfsUrl(challengerAddress)
-      .call({ from: accounts[0] });
+      .call({ from: account });
 
     this.setState({
       ipfsUrls: [...this.state.ipfsUrls, { challengerAddress, ipfsUrl }]
@@ -65,10 +69,10 @@ class Bounty extends Component {
   };
 
   upVoteChallenge = async (challengerAddress) => {
-    const { web3, accounts, bountyDetails, bountyInstance } = this.state;
+    const { web3, account, bountyDetails, bountyInstance } = this.state;
 
     await bountyInstance.methods.submitVoteDeposit().send({
-      from: accounts[0],
+      from: account,
       value: web3.utils.toWei(bountyDetails.voterDeposit, 'ether')
     });
 
@@ -76,7 +80,7 @@ class Bounty extends Component {
   };
 
   submitCommit = async (challengerAddress) => {
-    const { web3, accounts, bountyInstance } = this.state;
+    const { web3, account, bountyInstance } = this.state;
 
     let salt = this.generateSalt();
 
@@ -87,9 +91,7 @@ class Bounty extends Component {
 
     this.storeCommit(challengerAddress, salt);
 
-    await bountyInstance.methods
-      .submitCommit(commit)
-      .call({ from: accounts[0] });
+    await bountyInstance.methods.submitCommit(commit).call({ from: account });
   };
 
   generateSalt = () => {
@@ -97,22 +99,23 @@ class Bounty extends Component {
   };
 
   storeCommit = (challengerAddress, salt) => {
+    const { account } = this.state;
     let data = [];
 
-    data = JSON.parse(localStorage.getItem(challengerAddress));
+    data = JSON.parse(localStorage.getItem(account));
 
     if (!data) {
       data = [];
-      data = [...data, salt];
+      data = [...data, { challengerAddress, salt }];
       console.log(JSON.stringify(data));
-      localStorage.setItem(challengerAddress, JSON.stringify(data));
+      localStorage.setItem(account, JSON.stringify(data));
     } else {
-      data = [...data, salt];
+      data = [...data, { challengerAddress, salt }];
       console.log(JSON.stringify(data));
-      localStorage.setItem(challengerAddress, JSON.stringify(data));
+      localStorage.setItem(account, JSON.stringify(data));
     }
 
-    console.log(JSON.parse(localStorage.getItem(challengerAddress)));
+    console.log(JSON.parse(localStorage.getItem(account)));
   };
 
   // revealCommit = () => {};
