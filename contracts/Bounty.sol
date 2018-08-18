@@ -47,7 +47,6 @@ contract Bounty is ReentrancyGuard {
         uint submissionTimestamp;
         uint upVotes;
         address[] voted;
-        bool hasSubmitted;
     }
 
     mapping(address => Challenge) challengerAddress;
@@ -67,6 +66,7 @@ contract Bounty is ReentrancyGuard {
 // ==================
 // FUNCTION MODIFIERS
 // ==================
+
 
 
     ///@dev locks out function from being called outside of Challenge period and updates state of status (if needed)
@@ -126,7 +126,7 @@ contract Bounty is ReentrancyGuard {
     event LogString(bytes); // FOR TESTING ONLY
     event LogCommit(bytes32[]); // FOR TESTING ONLY
     event LogAddressArraySize(uint); // FOR TESTING ONLY
-    event LogHash(bytes32, bytes32); // FOR TESTING ONLY
+    event LogHash(bytes32); // FOR TESTING ONLY
     event LogBool(bool); // FOR TESTING ONLY
 
 
@@ -251,24 +251,24 @@ contract Bounty is ReentrancyGuard {
     //     return _challenger.upVotes;
     // }
 
-    // function getBountyWinner()
-    // public
-    // view
+    function getBountyWinner()
+    public
+    view
     // isWithdrawalPeriod
-    // returns(
-    //     address,
-    //     uint, 
-    //     uint
-    // )
-    // {
-    //     Challenge storage winner = challengerAddress[bountyWinner];
+    returns(
+        address,
+        uint, 
+        uint
+    )
+    {
+        Challenge storage winner = challengerAddress[bountyWinner];
 
-    //     return(
-    //         bountyWinner,
-    //         winner.submissionTimestamp,
-    //         winner.upVotes
-    //     );
-    // }
+        return(
+            bountyWinner,
+            winner.submissionTimestamp,
+            winner.upVotes
+        );
+    }
 
     // function getTime()
     // public
@@ -305,13 +305,13 @@ contract Bounty is ReentrancyGuard {
             }
         }
 
+        // Only add non-duplicate addresses
         if(!flag){
             challengerAddresses.push(msg.sender);
         }
         
         _challenger.ipfsUrl = _ipfsUrl;
         _challenger.submissionTimestamp = now;
-        _challenger.hasSubmitted = true;
     }   
 
 
@@ -363,6 +363,32 @@ contract Bounty is ReentrancyGuard {
     }
 
 
+    // FOR TESTING ONLY
+
+    function getCommit()
+    public
+    view
+    returns(bytes32[])
+    { 
+        Vote storage _voter = voter[msg.sender];
+
+        return _voter.commitHash;
+    }
+
+
+    // FOR TESTING ONLY
+
+    function hashStuff(bytes20 _challengerAddress, uint salt)    
+    public
+    pure
+    returns(bytes32)
+    {
+        bytes32 deezNutz = keccak256(abi.encodePacked(_challengerAddress, salt));
+
+        return deezNutz;
+    }
+
+
     /** @dev hashes the provided address and salt then matches the result to a value stored in commithash array, If a commit mataches the hash then the commit is removed from the array, the challenger is awarded an upvote and the voter is added to the challengers voted array, 
     *   @param _challengerAddress - the address of the challenger
     *   @param salt -a random number generated on the client
@@ -378,6 +404,7 @@ contract Bounty is ReentrancyGuard {
 
         bytes32 revealHash = keccak256(abi.encodePacked(_challengerAddress, salt));
         
+        emit LogHash(revealHash);
         bool flag = false; 
 
         for(uint i = 0; i < _voter.commitHash.length; i++){

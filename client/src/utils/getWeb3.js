@@ -11,6 +11,7 @@ const getWeb3 = () =>
 
       if (alreadyInjected) {
         // Use Mist/MetaMask's provider.
+        console.log('web3 already injected');
         web3 = new Web3(web3.currentProvider);
         resolve(web3);
       } else {

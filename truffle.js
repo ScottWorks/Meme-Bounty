@@ -13,6 +13,13 @@ module.exports = {
       network_id: '*' // Match any network id
     }
   },
+  networks: {
+    development: {
+      host: 'localhost',
+      port: 7545,
+      network_id: '*' // Match any network id
+    }
+  },
   solc: {
     // Turns on the Solidity optimizer. For development the optimizer's
     // quite helpful, just remember to be careful, and potentially turn it
