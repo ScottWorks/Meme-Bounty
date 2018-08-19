@@ -242,14 +242,6 @@ contract Bounty is ReentrancyGuard {
         return _challenger.ipfsUrl;
     }
     
-    // function getUpvoteCount(address _challengerAddress)
-    // public
-    // view
-    // returns(uint)
-    // {
-    //     Challenge storage _challenger = challengerAddress[_challengerAddress];
-    //     return _challenger.upVotes;
-    // }
 
     function getBountyWinner()
     public
@@ -269,6 +261,15 @@ contract Bounty is ReentrancyGuard {
             winner.upVotes
         );
     }
+
+    // function getUpvoteCount(address _challengerAddress)
+    // public
+    // view
+    // returns(uint)
+    // {
+    //     Challenge storage _challenger = challengerAddress[_challengerAddress];
+    //     return _challenger.upVotes;
+    // }
 
     // function getTime()
     // public
@@ -291,7 +292,7 @@ contract Bounty is ReentrancyGuard {
 
     function submitChallenge(string _ipfsUrl) 
     public
-    // isChallengePeriod
+    isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
 
@@ -328,7 +329,7 @@ contract Bounty is ReentrancyGuard {
     function submitVoteDeposit()
     public
     payable
-    // isCommitPeriod
+    isCommitPeriod
     {
         require(msg.value >= voterDeposit, "Insufficient funds");
 
@@ -348,7 +349,7 @@ contract Bounty is ReentrancyGuard {
 
     function submitCommit(bytes32 _commitHash) 
     public 
-    // isCommitPeriod
+    isCommitPeriod
     {
         Vote storage _voter = voter[msg.sender];
 
@@ -365,28 +366,28 @@ contract Bounty is ReentrancyGuard {
 
     // FOR TESTING ONLY
 
-    function getCommit()
-    public
-    view
-    returns(bytes32[])
-    { 
-        Vote storage _voter = voter[msg.sender];
+    // function getCommit()
+    // public
+    // view
+    // returns(bytes32[])
+    // { 
+    //     Vote storage _voter = voter[msg.sender];
 
-        return _voter.commitHash;
-    }
+    //     return _voter.commitHash;
+    // }
 
 
     // FOR TESTING ONLY
 
-    function hashStuff(bytes20 _challengerAddress, uint salt)    
-    public
-    pure
-    returns(bytes32)
-    {
-        bytes32 deezNutz = keccak256(abi.encodePacked(_challengerAddress, salt));
+    // function hashStuff(bytes20 _challengerAddress, uint salt)    
+    // public
+    // pure
+    // returns(bytes32)
+    // {
+    //     bytes32 deezNutz = keccak256(abi.encodePacked(_challengerAddress, salt));
 
-        return deezNutz;
-    }
+    //     return deezNutz;
+    // }
 
 
     /** @dev hashes the provided address and salt then matches the result to a value stored in commithash array, If a commit mataches the hash then the commit is removed from the array, the challenger is awarded an upvote and the voter is added to the challengers voted array, 
@@ -396,7 +397,7 @@ contract Bounty is ReentrancyGuard {
 
     function revealCommit(bytes20 _challengerAddress, uint salt) 
     public 
-    // isRevealPeriod
+    isRevealPeriod
     {
 
         Vote storage _voter = voter[msg.sender];
@@ -404,7 +405,6 @@ contract Bounty is ReentrancyGuard {
 
         bytes32 revealHash = keccak256(abi.encodePacked(_challengerAddress, salt));
         
-        emit LogHash(revealHash);
         bool flag = false; 
 
         for(uint i = 0; i < _voter.commitHash.length; i++){
@@ -439,7 +439,7 @@ contract Bounty is ReentrancyGuard {
     function withdrawFunds()
     external
     payable
-    // isWithdrawalPeriod
+    isWithdrawalPeriod
     nonReentrant
     {
         if(msg.sender == bountyWinner){
@@ -484,7 +484,7 @@ contract Bounty is ReentrancyGuard {
 
     function declareWinner(address _challengerAddress) 
     private 
-    // isRevealPeriod
+    isRevealPeriod
     {
         Challenge storage _challenger = challengerAddress[_challengerAddress];
         Challenge storage winner = challengerAddress[bountyWinner];

@@ -85,9 +85,6 @@ class Bounty extends Component {
       { type: 'uint', value: `${salt}` }
     );
 
-    console.log(challengerAddress, salt);
-    console.log(commit);
-
     this.storeCommit(challengerAddress, salt);
 
     await bountyInstance.methods.submitCommit(commit).send({ from: account });
@@ -116,60 +113,34 @@ class Bounty extends Component {
   revealCommits = async () => {
     const { account, bountyInstance } = this.state;
 
-    let resultCommit = await bountyInstance.methods
-      .getCommit()
-      .call({ from: account });
+    let commits = JSON.parse(localStorage.getItem(account));
 
-    console.log(resultCommit);
-
-    let commitArray = this.getCommits(account);
-
-    console.log(commitArray);
-
-    let challengerAddress = commitArray[0].challengerAddress;
-    let salt = commitArray[0].salt;
-
-    const result = await bountyInstance.methods
-      .revealCommit(challengerAddress, salt)
-      .send({ from: account });
-
-    console.log(result);
-
-    const winner = await bountyInstance.methods
-      .getBountyWinner()
-      .call({ from: account });
-
-    console.log(winner);
-
-    if (commitArray) {
-      let commitCount = commitArray.length;
-
-      await bountyInstance.methods
-        .revealCommit(challengerAddress, salt)
-        .call({ from: account });
+    if (commits) {
+      const commitCount = commits.length;
 
       for (let i = 0; i < commitCount; i++) {
-        let challengerAddress = commitArray[i].challengerAddress;
-        let salt = commitArray[i].salt;
-
-        console.log(challengerAddress, salt);
+        let challengerAddress = commits[i].challengerAddress;
+        let salt = commits[i].salt;
 
         await bountyInstance.methods
           .revealCommit(challengerAddress, salt)
-          .call({ from: account });
+          .send({ from: account });
       }
 
-      this.storeCommitCount(commitCount);
+      localStorage.setItem(account, commitCount);
     }
   };
 
-  getCommits = (account) => {
-    return JSON.parse(localStorage.getItem(account));
-  };
+  withdrawFunds = async () => {
+    const { account, bountyInstance } = this.state;
 
-  storeCommitCount = (account, commitCount) => {
-    localStorage.setItem(account, JSON.stringify(commitCount));
-    console.log(JSON.parse(localStorage.getItem(account)));
+    const commitCount = localStorage.getItem(account);
+
+    for (let i = 0; i < commitCount; i++) {
+      await bountyInstance.methods.withdrawFunds().send({ from: account });
+    }
+
+    localStorage.removeItem(account);
   };
 
   render() {
@@ -197,7 +168,7 @@ class Bounty extends Component {
         <input
           type="button"
           value="Withdraw Funds"
-          // onClick={this.withdrawFunds()}
+          onClick={this.withdrawFunds}
         />
         <ChallengeList
           data={{ ipfsUrls }}
