@@ -140,7 +140,7 @@ class Bounty extends Component {
       await bountyInstance.methods.withdrawFunds().send({ from: account });
     }
 
-    localStorage.removeItem(account);
+    localStorage.setItem(account, 0);
   };
 
   render() {

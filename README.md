@@ -19,7 +19,9 @@ This project was developed using the [Truffle Framework](https://truffleframewor
 
 4. At this point we need to compile the smart contracts then migrate them by entering `compile` inside the Truffle Development Console followed by `migrate`.
 
-5. Open a new instance of the CLI (should be at the directory root), then navigate to the client folder `cd ./client/`. At this point we are ready to launch the webpack server and begin interacting with the XBounty Client, enter `npm start` and have fun!
+5. Now that our local development blockchain is live we can connect MetaMask. If you have not done so already install [MetaMask](https://www.metamask.io), then create an account. Once that has been completed login and change the network from Main Etherenum Network to Custom RPC, this should allow you to enter a "New RPC URL", in this field put "http://127.0.0.1:9545". This RPC URL should match that of the development blockchain. Last import some of the private keys found in the Truffle Development Console into MetaMask.
+
+6. Finally, open a new instance of the CLI (should be at the directory root), then navigate to the client folder `cd ./client/`. At this point we are ready to launch the webpack server and begin interacting with the XBounty Client, enter `npm start` and have fun!
    :tada: :tada: :tada:
 
 ## Testing
