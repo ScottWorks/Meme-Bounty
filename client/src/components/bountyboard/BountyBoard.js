@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import getContractInstance from '../../utils/getContractInstance';
 import getWeb3 from '../../utils/getWeb3';
+
 import ipfsUpload from '../../utils/ipfs';
 import timeConversion from '../../utils/timeConversion';
 
