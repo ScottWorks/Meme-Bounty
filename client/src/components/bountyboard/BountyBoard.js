@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import getContractInstance from '../../utils/getContractInstance';
 import getWeb3 from '../../utils/getWeb3';
@@ -36,12 +37,16 @@ class BountyBoard extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.formatBountyData = this.formatBountyData.bind(this);
-    this.redirectToBounty = this.redirectToBounty.bind(this);
+    // this.redirectToBounty = this.redirectToBounty.bind(this);
   }
 
   componentDidMount = async () => {
     try {
-      const web3 = await getWeb3();
+      let web3 = await this.props.getWeb3();
+      web3 = web3.payload.web3Instance;
+
+      console.log(web3);
+
       const accounts = await web3.eth.getAccounts();
       const account = accounts[0];
 
@@ -65,9 +70,6 @@ class BountyBoard extends Component {
       });
     } catch (error) {
       // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, account, or contract. Check console for details.`
-      );
       console.log(error);
     }
   };
@@ -216,12 +218,12 @@ class BountyBoard extends Component {
     };
   };
 
-  redirectToBounty(details) {
-    this.setState({
-      currentBountyDetails: details,
-      redirect: true
-    });
-  }
+  // redirectToBounty(details) {
+  //   this.setState({
+  //     currentBountyDetails: details,
+  //     redirect: true
+  //   });
+  // }
 
   render() {
     const {
@@ -240,19 +242,18 @@ class BountyBoard extends Component {
     //   return <div>Loading Web3, account, and contract...</div>;
     // }
 
-    if (redirect) {
-      return (
-        <Redirect
-          to={{
-            pathname: `/bounty/${currentBountyDetails.bountyAddress}`,
-            state: {
-              web3: web3,
-              bountyDetails: currentBountyDetails
-            }
-          }}
-        />
-      );
-    }
+    // if (redirect) {
+    //   return (
+    //     <Redirect
+    //       to={{
+    //         pathname: `/bounty/${currentBountyDetails.bountyAddress}`,
+    //         state: {
+    //           bountyDetails: currentBountyDetails
+    //         }
+    //       }}
+    //     />
+    //   );
+    // }
 
     return (
       <div className="BountyBoard">
@@ -280,4 +281,13 @@ class BountyBoard extends Component {
   }
 }
 
-export default BountyBoard;
+function mapStateToProps(state) {
+  return {
+    web3: state.web3
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  { getWeb3 }
+)(BountyBoard);

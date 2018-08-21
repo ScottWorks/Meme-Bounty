@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import getContractInstance from '../../utils/getContractInstance';
+import getWeb3 from '../../utils/getWeb3';
 
 import BountyContract from '../../contracts/Bounty.json';
 
@@ -15,43 +17,56 @@ class Bounty extends Component {
     this.state = {
       web3: null,
       account: null,
-      bountyDetails: null,
+      bountyAddress: null,
       bountyInstance: null,
       ipfsUrls: []
     };
   }
 
   componentDidMount = async () => {
-    if (typeof this.props.location.state === 'undefined') {
-      console.log('fuck');
-      return null;
+    // if (typeof this.props.location.state === 'undefined') {
+    //   console.log('fuck');
+    //   return null;
+    // }
+
+    // const { bountyDetails, web3 } = this.props.location.state;
+    // const { bountyDetails } = this.props.location.state;
+
+    // const { web3 } = this.props.web3.payload.web3Instance;
+
+    try {
+      let web3 = await this.props.getWeb3();
+      web3 = web3.payload.web3Instance;
+
+      const { bountyAddress } = this.props.params;
+      console.log(web3, bountyAddress);
+
+      const accounts = await web3.eth.getAccounts();
+      const account = accounts[0];
+
+      const bountyInstance = await getContractInstance(
+        web3,
+        BountyContract,
+        bountyAddress
+      );
+
+      const challengerAddresses = await bountyInstance.methods
+        .getAllChallengerAddresses()
+        .call({ from: account });
+
+      challengerAddresses.forEach((challengerAddress) => {
+        this.getIpfsUrl(challengerAddress, account, bountyInstance);
+      });
+
+      this.setState({
+        web3,
+        account,
+        bountyAddress,
+        bountyInstance
+      });
+    } catch (error) {
+      console.log(error);
     }
-
-    const { bountyDetails, web3 } = this.props.location.state;
-
-    const accounts = await web3.eth.getAccounts();
-    const account = accounts[0];
-
-    const bountyInstance = await getContractInstance(
-      web3,
-      BountyContract,
-      bountyDetails.bountyAddress
-    );
-
-    const challengerAddresses = await bountyInstance.methods
-      .getAllChallengerAddresses()
-      .call({ from: account });
-
-    challengerAddresses.forEach((challengerAddress) => {
-      this.getIpfsUrl(challengerAddress, account, bountyInstance);
-    });
-
-    this.setState({
-      web3,
-      account,
-      bountyDetails,
-      bountyInstance
-    });
   };
 
   getIpfsUrl = async (challengerAddress, account, bountyInstance) => {
@@ -65,11 +80,11 @@ class Bounty extends Component {
   };
 
   upVoteChallenge = async (challengerAddress) => {
-    const { web3, account, bountyDetails, bountyInstance } = this.state;
+    const { web3, account, bountyAddress, bountyInstance } = this.state;
 
     await bountyInstance.methods.submitVoteDeposit().send({
       from: account,
-      value: web3.utils.toWei(bountyDetails.voterDeposit, 'ether')
+      value: web3.utils.toWei(bountyAddress.voterDeposit, 'ether')
     });
 
     this.submitCommit(challengerAddress);
@@ -150,13 +165,13 @@ class Bounty extends Component {
       <div className="Bounty">
         <h1>Bounty</h1>
 
-        <Link
+        {/* <Link
           to={{
             pathname: `/`
           }}
         >
           Home
-        </Link>
+        </Link> */}
 
         <br />
 
@@ -179,4 +194,13 @@ class Bounty extends Component {
   }
 }
 
-export default Bounty;
+function mapStateToProps(state) {
+  return {
+    web3: state.web3
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  { getWeb3 }
+)(Bounty);
