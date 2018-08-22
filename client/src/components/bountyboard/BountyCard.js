@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router';
 
 function BountyCard(props) {
-  const { uploadFile, redirectToBounty } = props;
+  const { uploadFile } = props;
   const { elem } = props.data;
 
   return (
@@ -14,12 +13,10 @@ function BountyCard(props) {
       <p>Bounty Description: {elem.description}</p>
       <p>Cost per Vote: {elem.voterDeposit}</p>
       <p>Total Votes: {elem.totalVoterCount}</p>
-      {/* <input
-        type="button"
-        value="View Challenges"
-        onClick={() => redirectToBounty(elem)}
-      /> */}
-      <Link to={`/${elem.bountyAddress}`}>View Challenges</Link>
+
+      <button onClick={() => window.location.assign(`/${elem.bountyAddress}`)}>
+        View Challenge
+      </button>
 
       <input type="file" onChange={(e) => uploadFile(e, elem)} />
     </div>

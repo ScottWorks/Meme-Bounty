@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import formatData from '../../utils/formatData';
 import getContractInstance from '../../utils/getContractInstance';
 import getWeb3 from '../../utils/getWeb3';
 
@@ -17,23 +17,13 @@ class Bounty extends Component {
     this.state = {
       web3: null,
       account: null,
-      bountyAddress: null,
       bountyInstance: null,
+      bountyDetails: null,
       ipfsUrls: []
     };
   }
 
   componentDidMount = async () => {
-    // if (typeof this.props.location.state === 'undefined') {
-    //   console.log('fuck');
-    //   return null;
-    // }
-
-    // const { bountyDetails, web3 } = this.props.location.state;
-    // const { bountyDetails } = this.props.location.state;
-
-    // const { web3 } = this.props.web3.payload.web3Instance;
-
     try {
       let web3 = await this.props.getWeb3();
       web3 = web3.payload.web3Instance;
@@ -58,11 +48,17 @@ class Bounty extends Component {
         this.getIpfsUrl(challengerAddress, account, bountyInstance);
       });
 
+      const result = await bountyInstance.methods
+        .getBountyParameters()
+        .call({ from: account });
+
+      let bountyDetails = await formatData(web3, result);
+
       this.setState({
         web3,
         account,
-        bountyAddress,
-        bountyInstance
+        bountyInstance,
+        bountyDetails
       });
     } catch (error) {
       console.log(error);
@@ -80,11 +76,11 @@ class Bounty extends Component {
   };
 
   upVoteChallenge = async (challengerAddress) => {
-    const { web3, account, bountyAddress, bountyInstance } = this.state;
+    const { web3, account, bountyDetails, bountyInstance } = this.state;
 
     await bountyInstance.methods.submitVoteDeposit().send({
       from: account,
-      value: web3.utils.toWei(bountyAddress.voterDeposit, 'ether')
+      value: web3.utils.toWei(bountyDetails.voterDeposit, 'ether')
     });
 
     this.submitCommit(challengerAddress);
@@ -165,13 +161,7 @@ class Bounty extends Component {
       <div className="Bounty">
         <h1>Bounty</h1>
 
-        {/* <Link
-          to={{
-            pathname: `/`
-          }}
-        >
-          Home
-        </Link> */}
+        <button onClick={() => window.location.assign(`/`)}>Home</button>
 
         <br />
 

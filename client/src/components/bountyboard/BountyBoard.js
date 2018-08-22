@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import getContractInstance from '../../utils/getContractInstance';
 import getWeb3 from '../../utils/getWeb3';
 
+import formatData from '../../utils/formatData';
 import ipfsUpload from '../../utils/ipfs';
-import timeConversion from '../../utils/timeConversion';
 
 import BountyBoardContract from '../../contracts/BountyBoard.json';
 import BountyContract from '../../contracts/Bounty.json';
@@ -30,14 +29,11 @@ class BountyBoard extends Component {
       voteDeposit: '',
       challengeDuration: '',
       voteDuration: '',
-      currentBountyDetails: null,
-      currentBountyAddress: null,
-      redirect: false
+      currentBountyAddress: null
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.formatBountyData = this.formatBountyData.bind(this);
-    // this.redirectToBounty = this.redirectToBounty.bind(this);
+    // this.formatBountyData = this.formatBountyData.bind(this);
   }
 
   componentDidMount = async () => {
@@ -74,6 +70,12 @@ class BountyBoard extends Component {
     }
   };
 
+  handleChange(key, value) {
+    this.setState({
+      [key]: value
+    });
+  }
+
   getBounty = async (web3, account, bountyAddress) => {
     const instance = await getContractInstance(
       web3,
@@ -85,67 +87,13 @@ class BountyBoard extends Component {
       .getBountyParameters()
       .call({ from: account });
 
-    let formattedData = await this.formatBountyData(result);
+    let formattedData = await formatData(web3, result);
 
     this.setState({
       bountyInstances: [...this.state.bountyInstances, instance],
       bountyDetails: [...this.state.bountyDetails, formattedData]
     });
   };
-
-  formatBountyData(inputData) {
-    const { web3 } = this.state;
-
-    let status;
-
-    let creationDate = timeConversion.fromEpoch(inputData[3], 'MM-DD-YYYY');
-
-    switch (inputData[5]) {
-      case '0':
-        status = 'Challenge';
-        break;
-      case '1':
-        status = 'Commit';
-        break;
-      case '2':
-        status = 'Reveal';
-        break;
-      case '3':
-        status = 'Withdraw';
-        break;
-      case '4':
-        status = 'Inactive';
-        break;
-      default:
-        status = 'Error';
-        break;
-    }
-
-    const data = {
-      bountyAddress: inputData[0],
-      owner: inputData[1],
-      posterDeposit: web3.utils.fromWei(inputData[2], 'ether'),
-      creationTimestamp: inputData[3],
-      creationDate: creationDate,
-      description: inputData[4],
-      status: status,
-      voterDeposit: web3.utils.fromWei(inputData[6], 'ether'),
-      challengeDuration: inputData[7],
-      voteDuration: inputData[8],
-      totalVoterCount: inputData[9],
-      winningVoterCount: inputData[10],
-      voterDepositTotal: web3.utils.fromWei(inputData[11], 'ether'),
-      voterPayout: web3.utils.fromWei(inputData[12], 'ether')
-    };
-
-    return data;
-  }
-
-  handleChange(key, value) {
-    this.setState({
-      [key]: value
-    });
-  }
 
   createBounty = async (event) => {
     event.preventDefault();
@@ -218,13 +166,6 @@ class BountyBoard extends Component {
     };
   };
 
-  // redirectToBounty(details) {
-  //   this.setState({
-  //     currentBountyDetails: details,
-  //     redirect: true
-  //   });
-  // }
-
   render() {
     const {
       web3,
@@ -233,27 +174,8 @@ class BountyBoard extends Component {
       bountyDescription,
       voteDeposit,
       challengeDuration,
-      voteDuration,
-      currentBountyDetails,
-      redirect
+      voteDuration
     } = this.state;
-
-    // if (!web3) {
-    //   return <div>Loading Web3, account, and contract...</div>;
-    // }
-
-    // if (redirect) {
-    //   return (
-    //     <Redirect
-    //       to={{
-    //         pathname: `/bounty/${currentBountyDetails.bountyAddress}`,
-    //         state: {
-    //           bountyDetails: currentBountyDetails
-    //         }
-    //       }}
-    //     />
-    //   );
-    // }
 
     return (
       <div className="BountyBoard">
@@ -271,11 +193,7 @@ class BountyBoard extends Component {
           createBounty={this.createBounty}
         />
 
-        <BountyList
-          data={{ bountyDetails }}
-          uploadFile={this.uploadFile}
-          redirectToBounty={this.redirectToBounty}
-        />
+        <BountyList data={{ bountyDetails }} uploadFile={this.uploadFile} />
       </div>
     );
   }
