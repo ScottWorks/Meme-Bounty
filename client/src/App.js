@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router';
+import { StyleSheet, css } from 'aphrodite';
 
 import Navbar from './components/common/Navbar';
 import Bounty from './components/bounty/Bounty';
@@ -12,7 +13,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className={css(styles.app_container)}>
         <Navbar />
         <Switch>
           <Route exact path="/" component={BountyBoard} />
@@ -24,3 +25,11 @@ class App extends Component {
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  app_container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  }
+});

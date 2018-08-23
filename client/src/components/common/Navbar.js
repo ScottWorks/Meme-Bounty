@@ -38,23 +38,27 @@ class Navbar extends Component {
     const { account, balance, icon } = this.state;
     return (
       <div className={css(styles.navbar_container)}>
-        <div className={css(styles.icon_container)}>
-          <img src={`data:image/png;base64,${icon}`} />
+        <div className={css(styles.rightSide_container)}>
+          <div className={css(styles.icon_container)}>
+            <img src={`data:image/png;base64,${icon}`} />
+          </div>
+
+          <div className={css(styles.accountDetails_container)}>
+            <p className={css(styles.accountDetails)}>{account}</p>
+            <p className={css(styles.accountDetails)}>{balance} Ξ</p>
+          </div>
         </div>
 
-        <div className={css(styles.accountDetails_container)}>
-          <p className={css(styles.accountDetails)}>{account}</p>
-          <p className={css(styles.accountDetails)}>{balance} Ξ</p>
-        </div>
-
-        <div className={css(styles.link_container)}>
-          <a
-            className={css(styles.link)}
-            href="/"
-            onClick={() => window.location.assign(`/`)}
-          >
-            XB
-          </a>
+        <div className={css(styles.leftSide_container)}>
+          <div className={css(styles.link_container)}>
+            <a
+              className={css(styles.link)}
+              href="/"
+              onClick={() => window.location.assign(`/`)}
+            >
+              XB
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -66,8 +70,8 @@ export default Navbar;
 const styles = StyleSheet.create({
   navbar_container: {
     display: 'flex',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: 'center',
+    width: '800px',
     height: '75px',
     marginBottom: '50px'
   },
@@ -79,15 +83,25 @@ const styles = StyleSheet.create({
   accountDetails: {
     paddingBottom: '8px'
   },
+  rightSide_container: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%'
+  },
+  leftSide_container: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row-reverse',
+    width: '100%'
+  },
   link_container: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
-    right: '0',
     width: '75px',
     height: '75px',
     fontSize: 'xx-large',
+    fontWeight: 'bolder',
     ':hover': {
       backgroundColor: 'grey'
     }
