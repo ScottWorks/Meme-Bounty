@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 
-import formatData from '../../utils/formatData';
 import getContractInstance from '../../utils/getContractInstance';
-import getWeb3 from '../../utils/getWeb3';
 import ipfsUpload from '../../utils/ipfs';
 
-import BountyBoardContract from '../../contracts/BountyBoard.json';
 import BountyContract from '../../contracts/Bounty.json';
 
 import BountyForm from './BountyForm';
 import BountyList from './BountyList';
-
-// import './BountyBoard.css';
 
 class BountyBoard extends Component {
   constructor(props) {
@@ -34,64 +29,11 @@ class BountyBoard extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  // componentDidMount = async () => {
-  //   try {
-  //     const { account, web3 } = this.props.data;
-
-  //     // const web3 = await getWeb3();
-  //     // const accounts = await web3.eth.getAccounts();
-  //     // const account = accounts[0];
-  //     console.log(web3);
-
-  //     const bountyBoardInstance = await getContractInstance(
-  //       web3,
-  //       BountyBoardContract
-  //     );
-
-  //     const bountyAddresses = await bountyBoardInstance.methods
-  //       .getAllBountyAddresses()
-  //       .call({ from: account });
-
-  //     bountyAddresses.forEach((bountyAddress) => {
-  //       return this.getBounty(web3, account, bountyAddress);
-  //     });
-
-  //     this.setState({
-  //       web3: web3,
-  //       account: account,
-  //       bountyBoardInstance: bountyBoardInstance
-  //     });
-  //   } catch (error) {
-  //     // Catch any errors for any of the above operations.
-  //     console.log(error);
-  //   }
-  // };
-
   handleChange(key, value) {
     this.setState({
       [key]: value
     });
   }
-
-  // getBounty = async (web3, account, bountyAddress) => {
-  //   const instance = await getContractInstance(
-  //     web3,
-  //     BountyContract,
-  //     bountyAddress
-  //   );
-
-  //   const result = await instance.methods
-  //     .getBountyParameters()
-  //     .call({ from: account });
-
-  //   console.log(result);
-  //   let formattedData = await formatData(web3, result);
-
-  //   this.setState({
-  //     bountyInstances: [...this.state.bountyInstances, instance],
-  //     bountyDetails: [...this.state.bountyDetails, formattedData]
-  //   });
-  // };
 
   createBounty = async (event) => {
     event.preventDefault();
@@ -100,9 +42,6 @@ class BountyBoard extends Component {
     const { account, bountyBoardInstance, web3 } = this.props.data;
 
     const {
-      // web3,
-      // account,
-      // bountyBoardInstance,
       bountyTotal,
       bountyDescription,
       voteDeposit,
@@ -146,8 +85,6 @@ class BountyBoard extends Component {
     event.preventDefault();
 
     const { account, web3 } = this.props.data;
-
-    // const { account, web3 } = this.state;
 
     const file = event.target.files[0];
     let reader = new window.FileReader();

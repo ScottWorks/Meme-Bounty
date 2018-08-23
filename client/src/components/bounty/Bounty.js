@@ -3,20 +3,15 @@ import { StyleSheet, css } from 'aphrodite';
 
 import formatData from '../../utils/formatData';
 import getContractInstance from '../../utils/getContractInstance';
-import getWeb3 from '../../utils/getWeb3';
 
 import BountyContract from '../../contracts/Bounty.json';
 
 import ChallengeList from './ChallengeList';
 
-// import './Bounty.css';
-
 class Bounty extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      web3: null,
-      account: null,
       bountyInstance: null,
       bountyDetails: null,
       ipfsUrls: []
@@ -29,10 +24,6 @@ class Bounty extends Component {
 
       const { bountyAddress } = this.props.data.match.params;
       const { account, web3 } = this.props.data;
-
-      // const web3 = await getWeb3();
-      // const accounts = await web3.eth.getAccounts();
-      // const account = accounts[0];
 
       const bountyInstance = await getContractInstance(
         web3,
@@ -76,7 +67,8 @@ class Bounty extends Component {
   };
 
   upVoteChallenge = async (challengerAddress) => {
-    const { web3, account, bountyDetails, bountyInstance } = this.state;
+    const { account, web3 } = this.props.data;
+    const { bountyDetails, bountyInstance } = this.state;
 
     await bountyInstance.methods.submitVoteDeposit().send({
       from: account,
@@ -87,7 +79,8 @@ class Bounty extends Component {
   };
 
   submitCommit = async (challengerAddress) => {
-    const { web3, account, bountyInstance } = this.state;
+    const { account, web3 } = this.props.data;
+    const { bountyInstance } = this.state;
 
     let salt = this.generateSalt();
 
@@ -106,7 +99,7 @@ class Bounty extends Component {
   };
 
   storeCommit = (challengerAddress, salt) => {
-    const { account } = this.state;
+    const { account } = this.props.data;
     let data = [];
 
     data = JSON.parse(localStorage.getItem(account));
@@ -122,7 +115,8 @@ class Bounty extends Component {
   };
 
   revealCommits = async () => {
-    const { account, bountyInstance } = this.state;
+    const { account } = this.props.data;
+    const { bountyInstance } = this.state;
 
     let commits = JSON.parse(localStorage.getItem(account));
 
@@ -143,7 +137,8 @@ class Bounty extends Component {
   };
 
   withdrawFunds = async () => {
-    const { account, bountyInstance } = this.state;
+    const { account } = this.props.data;
+    const { bountyInstance } = this.state;
 
     const commitCount = localStorage.getItem(account);
 
