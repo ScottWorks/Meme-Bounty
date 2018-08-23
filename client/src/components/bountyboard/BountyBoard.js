@@ -34,9 +34,7 @@ class BountyBoard extends Component {
   createBounty = async (event) => {
     event.preventDefault();
 
-    console.log(this.props);
     const { account, bountyBoardInstance, web3 } = this.props.data;
-
     const {
       bountyTotal,
       bountyDescription,

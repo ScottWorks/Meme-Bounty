@@ -23,5 +23,9 @@ module.exports = {
     } else {
       return `${num}`;
     }
+  },
+  getCurrentTime: function() {
+    let time = new Date();
+    return parseInt(time.getTime() / 1000);
   }
 };

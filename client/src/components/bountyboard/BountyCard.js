@@ -7,9 +7,9 @@ function BountyCard(props) {
 
   return (
     <div className="BountyBoard">
-      {/* <p>Status: {elem.status}</p> */}
+      <p>Status: {elem.status}</p>
       <p>Contract Address: {elem.bountyAddress}</p>
-      {/* <p>Bounty Owner: {elem.owner}</p> */}
+      <p>Time Left: {elem.timeLeft}</p>
       <p>Bounty Total: {elem.posterDeposit} Ξ</p>
       <p>Bounty Description: {elem.description}</p>
       <p>Cost per Vote: {elem.voterDeposit} Ξ</p>
