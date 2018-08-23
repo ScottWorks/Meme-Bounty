@@ -8,6 +8,7 @@ import BountyContract from '../../contracts/Bounty.json';
 
 import BountyForm from './BountyForm';
 import BountyList from './BountyList';
+import Modal from '../common/Modal';
 
 class BountyBoard extends Component {
   constructor(props) {
@@ -19,17 +20,24 @@ class BountyBoard extends Component {
       challengeDuration: '',
       voteDuration: '',
       currentBountyAddress: null,
-      isLoading: false
+      isLoading: false,
+      showModal: false
     };
-
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(key, value) {
+  handleChange = (key, value) => {
     this.setState({
       [key]: value
     });
-  }
+  };
+
+  handleToggleModal = () => {
+    const { showModal } = this.state;
+
+    this.setState({
+      showModal: !showModal
+    });
+  };
 
   createBounty = async (event) => {
     event.preventDefault();
@@ -123,7 +131,8 @@ class BountyBoard extends Component {
       voteDeposit,
       challengeDuration,
       voteDuration,
-      isLoading
+      isLoading,
+      showModal
     } = this.state;
 
     if (isLoading) {
@@ -136,19 +145,30 @@ class BountyBoard extends Component {
 
     return (
       <div className="BountyBoard">
-        <h1>Create New Bounty</h1>
+        {/* <h1>Create New Bounty</h1> */}
 
-        <BountyForm
-          data={{
-            bountyTotal,
-            bountyDescription,
-            voteDeposit,
-            challengeDuration,
-            voteDuration
-          }}
-          handleChange={this.handleChange}
-          createBounty={this.createBounty}
+        <input
+          type="button"
+          value="Create Bounty"
+          className={css(styles.modalButton)}
+          onClick={() => this.handleToggleModal()}
         />
+
+        {showModal && (
+          <Modal onCloseRequest={() => this.handleToggleModal()}>
+            <BountyForm
+              data={{
+                bountyTotal,
+                bountyDescription,
+                voteDeposit,
+                challengeDuration,
+                voteDuration
+              }}
+              handleChange={this.handleChange}
+              createBounty={this.createBounty}
+            />
+          </Modal>
+        )}
 
         <BountyList
           data={{ bountyDetails }}
@@ -161,3 +181,20 @@ class BountyBoard extends Component {
 }
 
 export default BountyBoard;
+
+const styles = StyleSheet.create({
+  modalButton: {
+    padding: ['0.7rem', '1.8rem'],
+    backgroundColor: '#568db2',
+    border: 0,
+    borderRadius: '0.3rem',
+    fontSize: '1rem',
+    color: '#fff',
+    cursor: 'pointer',
+    marginBottom: '0.8rem',
+
+    '&:hover': {
+      backgroundColor: '#466d87'
+    }
+  }
+});

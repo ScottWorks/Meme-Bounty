@@ -79,13 +79,8 @@ class App extends Component {
   };
 
   handleLoading = () => {
-    const { isLoading } = this.state;
-    let _isLoading;
-
-    if (isLoading) _isLoading = false;
-
     this.setState({
-      isLoading: _isLoading
+      isLoading: false
     });
   };
 
