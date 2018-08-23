@@ -36,6 +36,7 @@ class BountyBoard extends Component {
   componentDidMount = async () => {
     try {
       const web3 = await getWeb3();
+      console.log(web3);
       const accounts = await web3.eth.getAccounts();
       const account = accounts[0];
 
@@ -79,6 +80,8 @@ class BountyBoard extends Component {
     const result = await instance.methods
       .getBountyParameters()
       .call({ from: account });
+
+    console.log(result);
     let formattedData = await formatData(web3, result);
 
     this.setState({
@@ -132,11 +135,11 @@ class BountyBoard extends Component {
     });
   };
 
-  uploadFile = async (event, details) => {
+  uploadFile = async (event, bountyAddress) => {
     event.stopPropagation();
     event.preventDefault();
 
-    const { web3, account } = this.state;
+    const { account, web3 } = this.state;
 
     const file = event.target.files[0];
     let reader = new window.FileReader();
@@ -149,11 +152,25 @@ class BountyBoard extends Component {
       const instance = await getContractInstance(
         web3,
         BountyContract,
-        details.bountyAddress
+        bountyAddress
       );
 
       instance.methods.submitChallenge(ipfsURL).send({ from: account });
     };
+  };
+
+  freezeBounty = async (event, bountyAddress) => {
+    event.preventDefault();
+
+    const { account, web3 } = this.state;
+
+    const instance = await getContractInstance(
+      web3,
+      BountyContract,
+      bountyAddress
+    );
+
+    instance.methods.toggleEmergencyStop().send({ from: account });
   };
 
   render() {
@@ -182,7 +199,11 @@ class BountyBoard extends Component {
           createBounty={this.createBounty}
         />
 
-        <BountyList data={{ bountyDetails }} uploadFile={this.uploadFile} />
+        <BountyList
+          data={{ bountyDetails }}
+          uploadFile={this.uploadFile}
+          freezeBounty={this.freezeBounty}
+        />
       </div>
     );
   }

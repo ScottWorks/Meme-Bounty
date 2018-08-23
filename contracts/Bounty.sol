@@ -24,6 +24,7 @@ contract Bounty is ReentrancyGuard {
     uint challengeDuration;
     uint voteDuration;
     bool isInitialized = false;
+    bool isStopped = false;
     
     uint totalVoterCount;
     uint winningVoterCount;
@@ -115,6 +116,12 @@ contract Bounty is ReentrancyGuard {
     }
 
 
+    ///@dev emergency stop that can potentially stop malicious actors
+    modifier isNotStopped(){
+        require(!isStopped, "Contract has been frozen by authorized party.");
+        _;
+    }
+
 
 // ==========
 // EVENT LOGS
@@ -172,6 +179,18 @@ contract Bounty is ReentrancyGuard {
 
 
 
+    function toggleEmergencyStop()
+    public
+    {
+        require(msg.sender == ownerAddress, "Authorized users only!");
+        if(isStopped){
+            isStopped = false;
+        } else {
+            isStopped = true;
+        }
+    }
+
+
     /** @dev provides the bouty parameters
     *   @return bounty parameters
     */
@@ -192,7 +211,8 @@ contract Bounty is ReentrancyGuard {
         uint,
         uint,
         uint, 
-        uint
+        uint,
+        bool
     )
     {
 
@@ -209,7 +229,8 @@ contract Bounty is ReentrancyGuard {
             totalVoterCount,
             winningVoterCount,
             voterDepositTotal,
-            voterPayout
+            voterPayout,
+            isStopped
         );
     }
 
@@ -262,22 +283,6 @@ contract Bounty is ReentrancyGuard {
         );
     }
 
-    // function getUpvoteCount(address _challengerAddress)
-    // public
-    // view
-    // returns(uint)
-    // {
-    //     Challenge storage _challenger = challengerAddress[_challengerAddress];
-    //     return _challenger.upVotes;
-    // }
-
-    // function getTime()
-    // public
-    // view
-    // returns(uint)
-    // {
-    //     return(now);
-    // }
 
 
 // ====================
@@ -292,6 +297,7 @@ contract Bounty is ReentrancyGuard {
 
     function submitChallenge(string _ipfsUrl) 
     public
+    isNotStopped
     isChallengePeriod
     {  
         Challenge storage _challenger = challengerAddress[msg.sender];
@@ -329,6 +335,7 @@ contract Bounty is ReentrancyGuard {
     function submitVoteDeposit()
     public
     payable
+    isNotStopped
     isCommitPeriod
     {
         require(msg.value >= voterDeposit, "Insufficient funds");
@@ -349,6 +356,7 @@ contract Bounty is ReentrancyGuard {
 
     function submitCommit(bytes32 _commitHash) 
     public 
+    isNotStopped
     isCommitPeriod
     {
         Vote storage _voter = voter[msg.sender];
@@ -397,6 +405,7 @@ contract Bounty is ReentrancyGuard {
 
     function revealCommit(bytes20 _challengerAddress, uint salt) 
     public 
+    isNotStopped
     isRevealPeriod
     {
 
@@ -439,6 +448,7 @@ contract Bounty is ReentrancyGuard {
     function withdrawFunds()
     external
     payable
+    isNotStopped
     isWithdrawalPeriod
     nonReentrant
     {
@@ -484,6 +494,7 @@ contract Bounty is ReentrancyGuard {
 
     function declareWinner(address _challengerAddress) 
     private 
+    isNotStopped
     isRevealPeriod
     {
         Challenge storage _challenger = challengerAddress[_challengerAddress];

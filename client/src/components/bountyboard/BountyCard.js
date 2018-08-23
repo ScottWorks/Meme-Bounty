@@ -1,7 +1,7 @@
 import React from 'react';
 
 function BountyCard(props) {
-  const { uploadFile } = props;
+  const { freezeBounty, uploadFile } = props;
   const { elem } = props.data;
 
   return (
@@ -18,7 +18,14 @@ function BountyCard(props) {
         View Challenge
       </button>
 
-      <input type="file" onChange={(e) => uploadFile(e, elem)} />
+      <input type="file" onChange={(e) => uploadFile(e, elem.bountyAddress)} />
+
+      <button
+        type="button"
+        onClick={(e) => freezeBounty(e, elem.bountyAddress)}
+      >
+        Freeze Bounty
+      </button>
     </div>
   );
 }
