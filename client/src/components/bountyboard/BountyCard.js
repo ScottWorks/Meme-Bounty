@@ -6,12 +6,12 @@ function BountyCard(props) {
 
   return (
     <div className="BountyBoard">
-      <p>Status: {elem.status}</p>
+      {/* <p>Status: {elem.status}</p> */}
       <p>Contract Address: {elem.bountyAddress}</p>
-      <p>Bounty Owner: {elem.owner}</p>
-      <p>Bounty Total: {elem.posterDeposit}</p>
+      {/* <p>Bounty Owner: {elem.owner}</p> */}
+      <p>Bounty Total: {elem.posterDeposit} Ξ</p>
       <p>Bounty Description: {elem.description}</p>
-      <p>Cost per Vote: {elem.voterDeposit}</p>
+      <p>Cost per Vote: {elem.voterDeposit} Ξ</p>
       <p>Total Votes: {elem.totalVoterCount}</p>
 
       <button onClick={() => window.location.assign(`/${elem.bountyAddress}`)}>

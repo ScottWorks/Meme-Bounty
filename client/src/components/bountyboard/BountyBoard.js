@@ -101,8 +101,6 @@ class BountyBoard extends Component {
       voteDuration
     } = this.state;
 
-    console.log(account);
-
     const convertedBountyTotal = web3.utils.toWei(bountyTotal, 'ether');
     const convertedVoteDeposit = web3.utils.toWei(voteDeposit, 'ether');
     const convertedchallengeDuration = challengeDuration * 3600;
@@ -120,8 +118,6 @@ class BountyBoard extends Component {
         from: account,
         value: convertedBountyTotal
       });
-
-    console.log(result);
 
     let address = result.events.LogAddress.returnValues[0];
     let bountyInstance = this.getBounty(web3, account, address);

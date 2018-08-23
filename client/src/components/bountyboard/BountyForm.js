@@ -6,7 +6,7 @@ function BountyForm(props) {
 
   return (
     <form className={css(styles.form)} onSubmit={(e) => createBounty(e)}>
-      <label htmlFor="Bounty-Total">Bounty Total (ETH): </label>
+      <label htmlFor="Bounty-Total">Bounty Total (Ξ): </label>
       <input
         name="Bounty-Total"
         type="number"
@@ -26,7 +26,7 @@ function BountyForm(props) {
       <br />
       <br />
 
-      <label htmlFor="Vote-Deposit">Vote Deposit (ETH): </label>
+      <label htmlFor="Vote-Deposit">Vote Deposit (Ξ): </label>
       <input
         name="Vote-Deposit"
         type="number"
