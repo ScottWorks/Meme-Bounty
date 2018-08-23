@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { StyleSheet, css } from 'aphrodite';
 
 import formatData from '../../utils/formatData';
 import getContractInstance from '../../utils/getContractInstance';
@@ -8,7 +9,7 @@ import BountyContract from '../../contracts/Bounty.json';
 
 import ChallengeList from './ChallengeList';
 
-import './Bounty.css';
+// import './Bounty.css';
 
 class Bounty extends Component {
   constructor(props) {

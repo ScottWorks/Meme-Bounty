@@ -5,8 +5,8 @@ import getWeb3 from '../../utils/getWeb3';
 import { StyleSheet, css } from 'aphrodite';
 
 class Navbar extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       web3: null,
       account: null,
@@ -16,15 +16,22 @@ class Navbar extends Component {
   }
 
   componentDidMount = async () => {
-    const web3 = await getWeb3();
-    const accounts = await web3.eth.getAccounts();
-    const account = accounts[0];
+    // const web3 = await getWeb3();
+    // const accounts = await web3.eth.getAccounts();
+    // const account = accounts[0];
+    const { account, web3 } = this.props.data;
+
+    console.log(web3);
 
     const balance = await web3.eth.getBalance(account);
     const balanceInEther = web3.utils.fromWei(balance, 'ether');
     const balanceRounded = Number.parseFloat(balanceInEther).toPrecision(6);
 
     const icon = new Identicon(account, 65).toString();
+
+    // console.log('hit 1');
+    // this.props.handleLoading();
+    // console.log('hit 2');
 
     this.setState({
       web3: web3,

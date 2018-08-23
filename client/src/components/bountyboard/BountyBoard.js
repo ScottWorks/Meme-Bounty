@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { StyleSheet, css } from 'aphrodite';
 
 import formatData from '../../utils/formatData';
 import getContractInstance from '../../utils/getContractInstance';
@@ -11,7 +12,7 @@ import BountyContract from '../../contracts/Bounty.json';
 import BountyForm from './BountyForm';
 import BountyList from './BountyList';
 
-import './BountyBoard.css';
+// import './BountyBoard.css';
 
 class BountyBoard extends Component {
   constructor(props) {
@@ -33,36 +34,38 @@ class BountyBoard extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount = async () => {
-    try {
-      const web3 = await getWeb3();
-      console.log(web3);
-      const accounts = await web3.eth.getAccounts();
-      const account = accounts[0];
+  // componentDidMount = async () => {
+  //   try {
+  //     const { account, web3 } = this.props.data;
 
-      const bountyBoardInstance = await getContractInstance(
-        web3,
-        BountyBoardContract
-      );
+  //     // const web3 = await getWeb3();
+  //     // const accounts = await web3.eth.getAccounts();
+  //     // const account = accounts[0];
+  //     console.log(web3);
 
-      const bountyAddresses = await bountyBoardInstance.methods
-        .getAllBountyAddresses()
-        .call({ from: account });
+  //     const bountyBoardInstance = await getContractInstance(
+  //       web3,
+  //       BountyBoardContract
+  //     );
 
-      bountyAddresses.forEach((bountyAddress) => {
-        return this.getBounty(web3, account, bountyAddress);
-      });
+  //     const bountyAddresses = await bountyBoardInstance.methods
+  //       .getAllBountyAddresses()
+  //       .call({ from: account });
 
-      this.setState({
-        web3: web3,
-        account: account,
-        bountyBoardInstance: bountyBoardInstance
-      });
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      console.log(error);
-    }
-  };
+  //     bountyAddresses.forEach((bountyAddress) => {
+  //       return this.getBounty(web3, account, bountyAddress);
+  //     });
+
+  //     this.setState({
+  //       web3: web3,
+  //       account: account,
+  //       bountyBoardInstance: bountyBoardInstance
+  //     });
+  //   } catch (error) {
+  //     // Catch any errors for any of the above operations.
+  //     console.log(error);
+  //   }
+  // };
 
   handleChange(key, value) {
     this.setState({
@@ -70,33 +73,36 @@ class BountyBoard extends Component {
     });
   }
 
-  getBounty = async (web3, account, bountyAddress) => {
-    const instance = await getContractInstance(
-      web3,
-      BountyContract,
-      bountyAddress
-    );
+  // getBounty = async (web3, account, bountyAddress) => {
+  //   const instance = await getContractInstance(
+  //     web3,
+  //     BountyContract,
+  //     bountyAddress
+  //   );
 
-    const result = await instance.methods
-      .getBountyParameters()
-      .call({ from: account });
+  //   const result = await instance.methods
+  //     .getBountyParameters()
+  //     .call({ from: account });
 
-    console.log(result);
-    let formattedData = await formatData(web3, result);
+  //   console.log(result);
+  //   let formattedData = await formatData(web3, result);
 
-    this.setState({
-      bountyInstances: [...this.state.bountyInstances, instance],
-      bountyDetails: [...this.state.bountyDetails, formattedData]
-    });
-  };
+  //   this.setState({
+  //     bountyInstances: [...this.state.bountyInstances, instance],
+  //     bountyDetails: [...this.state.bountyDetails, formattedData]
+  //   });
+  // };
 
   createBounty = async (event) => {
     event.preventDefault();
 
+    console.log(this.props);
+    const { account, bountyBoardInstance, web3 } = this.props.data;
+
     const {
-      web3,
-      account,
-      bountyBoardInstance,
+      // web3,
+      // account,
+      // bountyBoardInstance,
       bountyTotal,
       bountyDescription,
       voteDeposit,
@@ -123,7 +129,7 @@ class BountyBoard extends Component {
       });
 
     let address = result.events.LogAddress.returnValues[0];
-    let bountyInstance = this.getBounty(web3, account, address);
+    let bountyInstance = this.props.getBounty(web3, account, address);
 
     this.setState({
       bountyInstances: [...this.state.bountyInstances, bountyInstance],
@@ -139,7 +145,9 @@ class BountyBoard extends Component {
     event.stopPropagation();
     event.preventDefault();
 
-    const { account, web3 } = this.state;
+    const { account, web3 } = this.props.data;
+
+    // const { account, web3 } = this.state;
 
     const file = event.target.files[0];
     let reader = new window.FileReader();
@@ -161,8 +169,9 @@ class BountyBoard extends Component {
 
   freezeBounty = async (event, bountyAddress) => {
     event.preventDefault();
+    const { account, web3 } = this.props.data;
 
-    const { account, web3 } = this.state;
+    // const { account, web3 } = this.state;
 
     const instance = await getContractInstance(
       web3,
@@ -174,8 +183,8 @@ class BountyBoard extends Component {
   };
 
   render() {
+    const { bountyDetails } = this.props.data;
     const {
-      bountyDetails,
       bountyTotal,
       bountyDescription,
       voteDeposit,
