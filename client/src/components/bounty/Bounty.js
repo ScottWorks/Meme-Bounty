@@ -156,7 +156,7 @@ class Bounty extends Component {
       <div className="Bounty">
         <h1>Bounty</h1>
 
-        <button onClick={() => window.location.assign(`/`)}>Home</button>
+        <button onClick={() => window.location.assign(`/`)}>Go Back</button>
 
         <br />
 

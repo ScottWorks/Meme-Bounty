@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Identicon from 'identicon.js';
 
-import getWeb3 from '../../utils/getWeb3';
 import { StyleSheet, css } from 'aphrodite';
 
 class Navbar extends Component {
@@ -47,18 +46,6 @@ class Navbar extends Component {
             <p className={css(styles.accountDetails)}>{balance} Ξ</p>
           </div>
         </div>
-
-        <div className={css(styles.leftSide_container)}>
-          <div className={css(styles.link_container)}>
-            <a
-              className={css(styles.link)}
-              href="/"
-              onClick={() => window.location.assign(`/`)}
-            >
-              XB
-            </a>
-          </div>
-        </div>
       </div>
     );
   }
@@ -86,23 +73,5 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     width: '100%'
-  },
-  leftSide_container: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'row-reverse',
-    width: '100%'
-  },
-  link_container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '75px',
-    height: '75px',
-    fontSize: 'xx-large',
-    fontWeight: 'bolder',
-    ':hover': {
-      backgroundColor: 'grey'
-    }
   }
 });

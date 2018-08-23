@@ -23,7 +23,8 @@ class BountyBoard extends Component {
       voteDeposit: '',
       challengeDuration: '',
       voteDuration: '',
-      currentBountyAddress: null
+      currentBountyAddress: null,
+      isLoading: false
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -83,8 +84,11 @@ class BountyBoard extends Component {
   uploadFile = async (event, bountyAddress) => {
     event.stopPropagation();
     event.preventDefault();
+    event.persist();
 
     const { account, web3 } = this.props.data;
+
+    await this.setState({ isLoading: true });
 
     const file = event.target.files[0];
     let reader = new window.FileReader();
@@ -99,6 +103,8 @@ class BountyBoard extends Component {
         BountyContract,
         bountyAddress
       );
+
+      await this.setState({ isLoading: false });
 
       instance.methods.submitChallenge(ipfsURL).send({ from: account });
     };
@@ -124,8 +130,17 @@ class BountyBoard extends Component {
       bountyDescription,
       voteDeposit,
       challengeDuration,
-      voteDuration
+      voteDuration,
+      isLoading
     } = this.state;
+
+    if (isLoading) {
+      return (
+        <div>
+          <p>Doing magic with IPFS, brb...</p>
+        </div>
+      );
+    }
 
     return (
       <div className="BountyBoard">

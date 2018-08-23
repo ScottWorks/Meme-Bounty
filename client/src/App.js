@@ -104,7 +104,7 @@ class App extends Component {
     if (isLoading) {
       return (
         <div>
-          <img />
+          <p>Loading all the goodies...</p>
         </div>
       );
     }
