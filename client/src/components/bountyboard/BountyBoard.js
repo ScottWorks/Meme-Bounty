@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-
-import getContractInstance from '../../utils/getContractInstance';
-import getWeb3 from '../../utils/getWeb3';
 
 import formatData from '../../utils/formatData';
+import getContractInstance from '../../utils/getContractInstance';
+import getWeb3 from '../../utils/getWeb3';
 import ipfsUpload from '../../utils/ipfs';
 
 import BountyBoardContract from '../../contracts/BountyBoard.json';
@@ -33,16 +31,11 @@ class BountyBoard extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    // this.formatBountyData = this.formatBountyData.bind(this);
   }
 
   componentDidMount = async () => {
     try {
-      let web3 = await this.props.getWeb3();
-      web3 = web3.payload.web3Instance;
-
-      console.log(web3);
-
+      const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
       const account = accounts[0];
 
@@ -60,9 +53,9 @@ class BountyBoard extends Component {
       });
 
       this.setState({
-        web3,
-        account,
-        bountyBoardInstance
+        web3: web3,
+        account: account,
+        bountyBoardInstance: bountyBoardInstance
       });
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -86,7 +79,6 @@ class BountyBoard extends Component {
     const result = await instance.methods
       .getBountyParameters()
       .call({ from: account });
-
     let formattedData = await formatData(web3, result);
 
     this.setState({
@@ -108,6 +100,8 @@ class BountyBoard extends Component {
       challengeDuration,
       voteDuration
     } = this.state;
+
+    console.log(account);
 
     const convertedBountyTotal = web3.utils.toWei(bountyTotal, 'ether');
     const convertedVoteDeposit = web3.utils.toWei(voteDeposit, 'ether');
@@ -168,7 +162,6 @@ class BountyBoard extends Component {
 
   render() {
     const {
-      web3,
       bountyDetails,
       bountyTotal,
       bountyDescription,
@@ -199,13 +192,4 @@ class BountyBoard extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    web3: state.web3
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  { getWeb3 }
-)(BountyBoard);
+export default BountyBoard;

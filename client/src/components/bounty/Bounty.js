@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import formatData from '../../utils/formatData';
 import getContractInstance from '../../utils/getContractInstance';
@@ -25,12 +24,9 @@ class Bounty extends Component {
 
   componentDidMount = async () => {
     try {
-      let web3 = await this.props.getWeb3();
-      web3 = web3.payload.web3Instance;
+      const { bountyAddress } = this.props.match.params;
 
-      const { bountyAddress } = this.props.params;
-      console.log(web3, bountyAddress);
-
+      const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
       const account = accounts[0];
 
@@ -184,13 +180,4 @@ class Bounty extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    web3: state.web3
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  { getWeb3 }
-)(Bounty);
+export default Bounty;

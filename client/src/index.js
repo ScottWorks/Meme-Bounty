@@ -1,26 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory } from 'react-router';
-import { Provider } from 'react-redux';
-import { syncHistoryWithStore } from 'react-router-redux';
+import { Router, Switch, Route } from 'react-router';
 
-// import getWeb3 from './utils/getWeb3';
-import store from './redux/store';
+import createBrowserHistory from 'history/createBrowserHistory';
 
 import Bounty from './components/bounty/Bounty';
 import BountyBoard from './components/bountyboard/BountyBoard';
 
 import './index.css';
-import getWeb3 from './utils/getWeb3';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const history = syncHistoryWithStore(browserHistory, store);
+const history = createBrowserHistory();
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <Route path="/" component={BountyBoard} />
+  <Router history={history}>
+    <Switch>
+      <Route exact path="/" component={BountyBoard} />
       <Route path="/:bountyAddress" component={Bounty} />
-    </Router>
-  </Provider>,
+    </Switch>
+  </Router>,
   document.getElementById('root')
 );

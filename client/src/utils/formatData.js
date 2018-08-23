@@ -1,5 +1,3 @@
-import { connect } from 'react-redux';
-
 import timeConversion from './timeConversion';
 
 const formatData = (web3, inputData) => {

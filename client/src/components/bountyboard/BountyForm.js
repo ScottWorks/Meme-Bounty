@@ -1,10 +1,11 @@
 import React from 'react';
+import { StyleSheet, css } from 'aphrodite';
 
 function BountyForm(props) {
   const { data, handleChange, createBounty } = props;
 
   return (
-    <form onSubmit={(e) => createBounty(e)}>
+    <form className={css(styles.form)} onSubmit={(e) => createBounty(e)}>
       <label htmlFor="Bounty-Total">Bounty Total (ETH): </label>
       <input
         name="Bounty-Total"
@@ -61,3 +62,13 @@ function BountyForm(props) {
 }
 
 export default BountyForm;
+
+const styles = StyleSheet.create({
+  form: {
+    textAlign: 'center',
+    width: '700px',
+    padding: '3%'
+  },
+  inputField: {},
+  submitButton: {}
+});
