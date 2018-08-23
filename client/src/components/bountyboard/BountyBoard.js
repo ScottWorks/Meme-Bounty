@@ -147,7 +147,7 @@ class BountyBoard extends Component {
       <div className="BountyBoard">
         <input
           type="button"
-          value="Create Bounty"
+          value="+"
           className={css(styles.modalButton)}
           onClick={() => this.handleToggleModal()}
         />
@@ -182,11 +182,13 @@ export default BountyBoard;
 
 const styles = StyleSheet.create({
   modalButton: {
-    padding: ['0.7rem', '1.8rem'],
+    width: '50px',
+    height: '50px',
+    border: '0',
+    borderRadius: '50%',
     backgroundColor: '#568db2',
-    border: 0,
-    borderRadius: '0.3rem',
-    fontSize: '1rem',
+    fontSize: '2.5rem',
+    fontWeight: '900',
     color: '#fff',
     cursor: 'pointer',
     marginBottom: '0.8rem',

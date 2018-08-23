@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '800px',
     height: '75px',
-    marginBottom: '50px'
+    marginBottom: '25px'
   },
   accountDetails_container: {
     marginLeft: '15px',
