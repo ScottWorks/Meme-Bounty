@@ -145,8 +145,6 @@ class BountyBoard extends Component {
 
     return (
       <div className="BountyBoard">
-        {/* <h1>Create New Bounty</h1> */}
-
         <input
           type="button"
           value="Create Bounty"
