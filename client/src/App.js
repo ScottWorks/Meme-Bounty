@@ -116,9 +116,10 @@ class App extends Component {
           <Route
             exact
             path="/"
-            render={() => (
+            render={(props) => (
               <BountyBoard
                 data={{
+                  ...props,
                   account,
                   bountyBoardInstance,
                   bountyInstances,
@@ -129,7 +130,19 @@ class App extends Component {
               />
             )}
           />
-          <Route path="/:bountyAddress" component={Bounty} />
+          <Route
+            path="/:bountyAddress"
+            render={(props) => (
+              <Bounty
+                data={{
+                  ...props,
+                  account,
+                  bountyDetails,
+                  web3
+                }}
+              />
+            )}
+          />
         </Switch>
       </div>
     );

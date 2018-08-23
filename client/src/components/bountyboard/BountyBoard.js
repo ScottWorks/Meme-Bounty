@@ -171,8 +171,6 @@ class BountyBoard extends Component {
     event.preventDefault();
     const { account, web3 } = this.props.data;
 
-    // const { account, web3 } = this.state;
-
     const instance = await getContractInstance(
       web3,
       BountyContract,

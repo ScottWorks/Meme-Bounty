@@ -25,11 +25,14 @@ class Bounty extends Component {
 
   componentDidMount = async () => {
     try {
-      const { bountyAddress } = this.props.match.params;
+      console.log(this.props);
 
-      const web3 = await getWeb3();
-      const accounts = await web3.eth.getAccounts();
-      const account = accounts[0];
+      const { bountyAddress } = this.props.data.match.params;
+      const { account, web3 } = this.props.data;
+
+      // const web3 = await getWeb3();
+      // const accounts = await web3.eth.getAccounts();
+      // const account = accounts[0];
 
       const bountyInstance = await getContractInstance(
         web3,
