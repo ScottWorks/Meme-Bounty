@@ -13,11 +13,6 @@ class BountyBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      web3: null,
-      account: null,
-      bountyBoardInstance: null,
-      bountyInstances: [],
-      bountyDetails: [],
       bountyTotal: '',
       bountyDescription: '',
       voteDeposit: '',
@@ -69,10 +64,9 @@ class BountyBoard extends Component {
       });
 
     let address = result.events.LogAddress.returnValues[0];
-    let bountyInstance = this.props.getBounty(web3, account, address);
+    this.props.getBounty(web3, account, address);
 
     this.setState({
-      bountyInstances: [...this.state.bountyInstances, bountyInstance],
       bountyTotal: '',
       bountyDescription: '',
       voteDeposit: '',
@@ -137,7 +131,7 @@ class BountyBoard extends Component {
     if (isLoading) {
       return (
         <div>
-          <p>Doing magic with IPFS, brb...</p>
+          <p>Doing IPFS magic, brb...</p>
         </div>
       );
     }

@@ -82,9 +82,7 @@ class App extends Component {
     const { isLoading } = this.state;
     let _isLoading;
 
-    if (isLoading) {
-      _isLoading = false;
-    }
+    if (isLoading) _isLoading = false;
 
     this.setState({
       isLoading: _isLoading
