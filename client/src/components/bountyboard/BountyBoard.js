@@ -214,7 +214,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#fff',
     cursor: 'pointer',
-
     ':hover': {
       backgroundColor: '#466d87'
     }
