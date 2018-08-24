@@ -144,14 +144,7 @@ class BountyBoard extends Component {
     }
 
     return (
-      <div className="BountyBoard">
-        <input
-          type="button"
-          value="+"
-          className={css(styles.modalButton)}
-          onClick={() => this.handleToggleModal()}
-        />
-
+      <div className={css(styles.bountyBoard_container)}>
         {showModal && (
           <Modal onCloseRequest={() => this.handleToggleModal()}>
             <BountyForm
@@ -168,11 +161,24 @@ class BountyBoard extends Component {
           </Modal>
         )}
 
-        <BountyList
-          data={{ bountyDetails }}
-          uploadFile={this.uploadFile}
-          freezeBounty={this.freezeBounty}
-        />
+        <div className={css(styles.bountyBoard_header)}>
+          <h1>Bounty Board</h1>
+
+          <input
+            type="button"
+            value="+"
+            className={css(styles.modalButton)}
+            onClick={() => this.handleToggleModal()}
+          />
+        </div>
+
+        <div className={css(styles.bountyBoard_body)}>
+          <BountyList
+            data={{ bountyDetails }}
+            uploadFile={this.uploadFile}
+            freezeBounty={this.freezeBounty}
+          />
+        </div>
       </div>
     );
   }
@@ -181,20 +187,35 @@ class BountyBoard extends Component {
 export default BountyBoard;
 
 const styles = StyleSheet.create({
+  bountyBoard_container: {
+    width: '800px'
+  },
+  bountyBoard_header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '25px',
+    fontSize: '2.5rem',
+    fontWeight: '800'
+  },
   modalButton: {
-    width: '50px',
-    height: '50px',
+    width: '35px',
+    height: '35px',
     border: '0',
     borderRadius: '50%',
+    marginLeft: '16px',
     backgroundColor: '#568db2',
-    fontSize: '2.5rem',
+    fontSize: '1.6rem',
     fontWeight: '900',
     color: '#fff',
     cursor: 'pointer',
-    marginBottom: '0.8rem',
 
-    '&:hover': {
+    ':hover': {
       backgroundColor: '#466d87'
     }
+  },
+  bountyBoard_body: {
+    display: 'flex',
+    justifyContent: 'center'
   }
 });

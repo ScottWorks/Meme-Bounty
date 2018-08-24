@@ -7,7 +7,6 @@ function BountyList(props) {
   const { bountyDetails } = props.data;
   return (
     <div className="BountyBoard">
-      <h1>Bounty Board</h1>
       {bountyDetails.map((elem, i) => {
         return (
           <div key={i}>
