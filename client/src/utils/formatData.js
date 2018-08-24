@@ -9,7 +9,9 @@ const formatData = (web3, inputData) => {
   let challengeDuration = parseInt(inputData[7]);
   let voteDuration = parseInt(inputData[8]);
 
-  if (currTime < creationTimestamp + challengeDuration) {
+  if (inputData[13]) {
+    status = 'Inactive';
+  } else if (currTime < creationTimestamp + challengeDuration) {
     timeLeft = creationTimestamp + challengeDuration - currTime;
     status = 'Challenge';
   } else if (
@@ -30,8 +32,6 @@ const formatData = (web3, inputData) => {
     creationTimestamp + challengeDuration + voteDuration + 172800
   ) {
     status = 'Withdraw';
-  } else if (inputData[13]) {
-    status = 'Inactive';
   } else {
     status = 'Error';
   }

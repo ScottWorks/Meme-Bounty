@@ -110,21 +110,26 @@ class BountyBoard extends Component {
     };
   };
 
-  freezeBounty = async (event, bountyAddress) => {
-    event.preventDefault();
-    const { account, web3 } = this.props.data;
+  freezeBounty = async (bountyAddress) => {
+    try {
+      const { account, web3 } = this.props.data;
 
-    const instance = await getContractInstance(
-      web3,
-      BountyContract,
-      bountyAddress
-    );
+      const instance = await getContractInstance(
+        web3,
+        BountyContract,
+        bountyAddress
+      );
 
-    instance.methods.toggleEmergencyStop().send({ from: account });
+      await instance.methods.toggleEmergencyStop().send({ from: account });
+
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   render() {
-    const { bountyDetails } = this.props.data;
+    const { account, bountyDetails } = this.props.data;
     const {
       bountyTotal,
       bountyDescription,
@@ -174,7 +179,7 @@ class BountyBoard extends Component {
 
         <div className={css(styles.bountyBoard_body)}>
           <BountyList
-            data={{ bountyDetails }}
+            data={{ account, bountyDetails }}
             uploadFile={this.uploadFile}
             freezeBounty={this.freezeBounty}
           />
