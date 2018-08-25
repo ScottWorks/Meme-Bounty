@@ -42,6 +42,15 @@ class App extends Component {
         .getAllBountyAddresses()
         .call({ from: account });
 
+      if (!bountyAddresses.length) {
+        this.setState({
+          web3: web3,
+          account: account,
+          bountyBoardInstance: bountyBoardInstance,
+          isLoading: false
+        });
+      }
+
       bountyAddresses.forEach((bountyAddress) => {
         return this.getBounty(web3, account, bountyAddress);
       });

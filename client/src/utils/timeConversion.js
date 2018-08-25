@@ -26,6 +26,6 @@ module.exports = {
   },
   getCurrentTime: function() {
     let time = new Date();
-    return parseInt(time.getTime() / 1000);
+    return parseInt(time.getTime() / 1000, 10);
   }
 };

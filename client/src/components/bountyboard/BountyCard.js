@@ -56,19 +56,12 @@ export default BountyCard;
 
 const styles = StyleSheet.create({
   bountyCard_container: {
-    // width: '625px',
-    // height: '150px',
-    // margin: '32px 24px',
-    // border: '3px solid black',
-    // cursor: 'pointer',
-    // ':hover': {
-    //   backgroundColor: 'pink'
-    // }
+    //
   },
   details_container: {
     display: 'flex',
     flexDirection: 'space-around',
-    width: '625px',
+    width: '675px',
     height: '150px',
     margin: '48px 24px',
     padding: '24px',
@@ -82,6 +75,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     width: '100%',
     height: '100%',
+    textAlign: 'left',
     ':hover': {
       backgroundColor: 'pink'
     }
@@ -89,16 +83,17 @@ const styles = StyleSheet.create({
   left_container: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'left',
     justifyContent: 'center',
-    width: '50%'
+    width: '40%',
+    marginRight: '32px'
   },
   center_container: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'left',
     justifyContent: 'center',
-    width: '50%'
+    width: '60%'
   },
   right_container: {
     display: 'flex',
@@ -121,9 +116,9 @@ const styles = StyleSheet.create({
     display: 'inline-block'
   },
   fakeUpload_button: {
-    // border: '2px solid gray',
+    border: '2px solid gray',
     backgroundColor: 'white',
-    // padding: '8px 20px',
+    padding: '8px 16px',
     borderRadius: '8px',
     textAlign: 'center',
     fontSize: '1rem'

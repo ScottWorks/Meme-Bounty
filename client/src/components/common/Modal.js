@@ -4,10 +4,6 @@ import isNil from 'lodash/fp/isNil';
 import { StyleSheet, css } from 'aphrodite';
 
 class Modal extends Component {
-  constructor() {
-    super();
-  }
-
   componentDidMount = () => {
     window.addEventListener('keyup', this.handleKeyUp, false);
     document.addEventListener('click', this.handleOutsideClick, false);

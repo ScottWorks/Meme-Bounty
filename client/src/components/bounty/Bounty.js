@@ -20,8 +20,6 @@ class Bounty extends Component {
 
   componentDidMount = async () => {
     try {
-      console.log(this.props);
-
       const { bountyAddress } = this.props.data.match.params;
       const { account, web3 } = this.props.data;
 
@@ -153,23 +151,26 @@ class Bounty extends Component {
     const { ipfsUrls } = this.state;
 
     return (
-      <div className="Bounty">
-        <h1>Bounty</h1>
+      <div className={css(styles.bounty_container)}>
+        <div className={css(styles.bountyTitle_header)}>
+          <p>Challenges</p>
+        </div>
+        <div className={css(styles.header_container)}>
+          <button onClick={() => window.location.assign(`/`)}>Go Back</button>
 
-        <button onClick={() => window.location.assign(`/`)}>Go Back</button>
+          <input
+            type="button"
+            value="Reveal UpVotes"
+            onClick={this.revealCommits}
+          />
 
-        <br />
+          <input
+            type="button"
+            value="Withdraw Funds"
+            onClick={this.withdrawFunds}
+          />
+        </div>
 
-        <input
-          type="button"
-          value="Reveal UpVotes"
-          onClick={this.revealCommits}
-        />
-        <input
-          type="button"
-          value="Withdraw Funds"
-          onClick={this.withdrawFunds}
-        />
         <ChallengeList
           data={{ ipfsUrls }}
           upVoteChallenge={this.upVoteChallenge}
@@ -180,3 +181,27 @@ class Bounty extends Component {
 }
 
 export default Bounty;
+
+const styles = StyleSheet.create({
+  bounty_container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: '750px'
+  },
+  bountyTitle_header: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '25px',
+    fontSize: '2.5rem',
+    fontWeight: '800'
+  },
+  header_container: {
+    display: 'flex',
+    justifyContent: 'space-around'
+  },
+  challenges_container: {
+    display: 'flex',
+    justifyContent: 'center'
+  }
+});

@@ -5,9 +5,9 @@ const formatData = (web3, inputData) => {
   let creationDate = timeConversion.fromEpoch(inputData[3], 'MM-DD-YYYY');
   const currTime = timeConversion.getCurrentTime();
 
-  let creationTimestamp = parseInt(inputData[3]);
-  let challengeDuration = parseInt(inputData[7]);
-  let voteDuration = parseInt(inputData[8]);
+  let creationTimestamp = parseInt(inputData[3], 10);
+  let challengeDuration = parseInt(inputData[7], 10);
+  let voteDuration = parseInt(inputData[8], 10);
 
   if (inputData[13]) {
     status = 'Inactive';
