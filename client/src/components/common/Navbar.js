@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
   },
   accountDetails_container: {
     marginLeft: '15px',
-    fontSize: 'medium',
-    fontWeight: 'bold'
+    fontSize: '1.2rem',
+    fontWeight: '700'
   },
   accountDetails: {
     paddingBottom: '8px'

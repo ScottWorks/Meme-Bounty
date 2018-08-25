@@ -61,14 +61,18 @@ const styles = StyleSheet.create({
   details_container: {
     display: 'flex',
     flexDirection: 'space-around',
-    width: '675px',
+    width: '700px',
     height: '150px',
     margin: '48px 24px',
     padding: '24px',
-    border: '3px solid black',
+    border: '3.5px solid gray',
+    borderRadius: '8px',
     cursor: 'pointer',
+    fontSize: '1.1rem',
+    backgroundColor: 'white',
     ':hover': {
-      backgroundColor: 'pink'
+      color: 'white',
+      backgroundColor: 'grey'
     }
   },
   link: {
@@ -77,7 +81,8 @@ const styles = StyleSheet.create({
     height: '100%',
     textAlign: 'left',
     ':hover': {
-      backgroundColor: 'pink'
+      color: 'white',
+      backgroundColor: 'grey'
     }
   },
   left_container: {
@@ -116,10 +121,10 @@ const styles = StyleSheet.create({
     display: 'inline-block'
   },
   fakeUpload_button: {
-    border: '2px solid gray',
-    backgroundColor: 'white',
     padding: '8px 16px',
+    border: '2.5px solid gray',
     borderRadius: '8px',
+    backgroundColor: 'white',
     textAlign: 'center',
     fontSize: '1rem'
   },

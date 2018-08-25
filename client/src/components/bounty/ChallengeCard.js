@@ -35,7 +35,18 @@ const styles = StyleSheet.create({
     height: 'auto'
   },
   upvote_button: {
-    width: '80px',
-    margin: '24px'
+    width: '100px',
+    margin: '24px',
+    border: '2.5px solid gray',
+    backgroundColor: 'white',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    ':hover': {
+      color: 'white',
+      backgroundColor: 'grey'
+    }
   }
 });

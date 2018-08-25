@@ -156,15 +156,22 @@ class Bounty extends Component {
           <p>Challenges</p>
         </div>
         <div className={css(styles.header_container)}>
-          <button onClick={() => window.location.assign(`/`)}>Go Back</button>
+          <button
+            className={css(styles.button)}
+            onClick={() => window.location.assign(`/`)}
+          >
+            Go Back
+          </button>
 
           <input
+            className={css(styles.button)}
             type="button"
             value="Reveal UpVotes"
             onClick={this.revealCommits}
           />
 
           <input
+            className={css(styles.button)}
             type="button"
             value="Withdraw Funds"
             onClick={this.withdrawFunds}
@@ -198,10 +205,30 @@ const styles = StyleSheet.create({
   },
   header_container: {
     display: 'flex',
-    justifyContent: 'space-around'
+    justifyContent: 'center'
   },
   challenges_container: {
     display: 'flex',
     justifyContent: 'center'
+  },
+  button: {
+    margin: '24px',
+    border: '2.5px solid gray',
+    backgroundColor: 'white',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    ':hover': {
+      color: 'white',
+      backgroundColor: 'grey'
+    },
+    small: {
+      width: '100px'
+    },
+    large: {
+      width: '200px'
+    }
   }
 });
