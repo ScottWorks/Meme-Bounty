@@ -22,14 +22,14 @@ const formatData = (web3, inputData) => {
     status = 'Commit';
   } else if (
     currTime > creationTimestamp + challengeDuration + voteDuration &&
-    currTime < creationTimestamp + challengeDuration + voteDuration + 172800
+    currTime < creationTimestamp + challengeDuration + voteDuration + 300
   ) {
     timeLeft =
-      creationTimestamp + challengeDuration + voteDuration + 172800 - currTime;
+      creationTimestamp + challengeDuration + voteDuration + 300 - currTime;
     status = 'Reveal';
   } else if (
     currTime >
-    creationTimestamp + challengeDuration + voteDuration + 172800
+    creationTimestamp + challengeDuration + voteDuration + 300
   ) {
     status = 'Withdraw';
   } else {

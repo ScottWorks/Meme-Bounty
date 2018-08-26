@@ -148,7 +148,46 @@ class Bounty extends Component {
   };
 
   render() {
-    const { ipfsUrls } = this.state;
+    const { bountyDetails, ipfsUrls } = this.state;
+    let revealButton, withdrawButton;
+
+    if (bountyDetails) {
+      revealButton =
+        bountyDetails.status === 'Reveal' ? (
+          <input
+            className={css(styles.button)}
+            type="button"
+            value="Reveal UpVotes"
+            onClick={this.revealCommits}
+          />
+        ) : (
+          <input
+            className={css(styles.button)}
+            type="button"
+            value="Reveal UpVotes"
+            onClick={this.revealCommits}
+            disabled
+          />
+        );
+
+      withdrawButton =
+        bountyDetails.status === 'Withdraw' ? (
+          <input
+            className={css(styles.button)}
+            type="button"
+            value="Withdraw Funds"
+            onClick={this.withdrawFunds}
+          />
+        ) : (
+          <input
+            className={css(styles.button)}
+            type="button"
+            value="Withdraw Funds"
+            onClick={this.withdrawFunds}
+            disabled
+          />
+        );
+    }
 
     return (
       <div className={css(styles.bounty_container)}>
@@ -163,19 +202,9 @@ class Bounty extends Component {
             Go Back
           </button>
 
-          <input
-            className={css(styles.button)}
-            type="button"
-            value="Reveal UpVotes"
-            onClick={this.revealCommits}
-          />
+          {revealButton}
 
-          <input
-            className={css(styles.button)}
-            type="button"
-            value="Withdraw Funds"
-            onClick={this.withdrawFunds}
-          />
+          {withdrawButton}
         </div>
 
         <ChallengeList
@@ -219,16 +248,21 @@ const styles = StyleSheet.create({
     borderRadius: '8px',
     textAlign: 'center',
     fontSize: '1rem',
-    cursor: 'pointer',
-    ':hover': {
-      color: 'white',
-      backgroundColor: 'grey'
-    },
     small: {
       width: '100px'
     },
     large: {
       width: '200px'
+    },
+    ':enabled': {
+      cursor: 'pointer',
+      ':hover': {
+        color: 'white',
+        backgroundColor: 'grey'
+      }
+    },
+    ':disabled': {
+      backgroundColor: 'white'
     }
   }
 });
