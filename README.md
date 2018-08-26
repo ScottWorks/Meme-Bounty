@@ -1,6 +1,10 @@
-## What is Meme Bounty?
+## Meme Bounty
 
-[Click here to learn more!](https://medium.com/@scottworks/1-meme-bounty-introduction-33964f51d677)
+#### [Introduction](https://medium.com/@scottworks/1-meme-bounty-introduction-33964f51d677)
+
+#### [Design Pattern Decisions](https://medium.com/@scottworks/2-meme-bounty-design-pattern-decisions-23f33a7a15da)
+
+#### [Avoiding Common Attacks](https://medium.com/@scottworks/3-meme-bounty-avoiding-common-attacks-9fcadfb7a8ae)
 
 ## Installation
 
