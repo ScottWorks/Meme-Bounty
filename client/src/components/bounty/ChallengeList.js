@@ -4,14 +4,17 @@ import ChallengeCard from './ChallengeCard';
 
 function ChallengeList(props) {
   const { upVoteChallenge } = props;
-  const { ipfsUrls } = props.data;
+  const { ipfsUrls, status } = props.data;
 
   return (
     <div>
       {ipfsUrls.map((elem, i) => {
         return (
           <div key={i}>
-            <ChallengeCard data={{ elem }} upVoteChallenge={upVoteChallenge} />
+            <ChallengeCard
+              data={{ elem, status }}
+              upVoteChallenge={upVoteChallenge}
+            />
           </div>
         );
       })}

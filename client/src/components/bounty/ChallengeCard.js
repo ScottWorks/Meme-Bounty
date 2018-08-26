@@ -3,17 +3,30 @@ import { StyleSheet, css } from 'aphrodite';
 
 function ChallengeCard(props) {
   const { upVoteChallenge } = props;
-  const { elem } = props.data;
+  const { elem, status } = props.data;
 
-  return (
-    <div className={css(styles.challenge_container)}>
-      <img className={css(styles.image)} src={elem.ipfsUrl} />
+  const upVoteButton =
+    status === 'Commit' ? (
       <input
         className={css(styles.upvote_button)}
         type="button"
         value="UpVote"
         onClick={() => upVoteChallenge(elem.challengerAddress)}
       />
+    ) : (
+      <input
+        className={css(styles.upvote_button)}
+        type="button"
+        value="UpVote"
+        onClick={() => upVoteChallenge(elem.challengerAddress)}
+        disabled
+      />
+    );
+
+  return (
+    <div className={css(styles.challenge_container)}>
+      <img className={css(styles.image)} src={elem.ipfsUrl} />
+      {upVoteButton}
     </div>
   );
 }
@@ -43,10 +56,15 @@ const styles = StyleSheet.create({
     borderRadius: '8px',
     textAlign: 'center',
     fontSize: '1rem',
-    cursor: 'pointer',
-    ':hover': {
-      color: 'white',
-      backgroundColor: 'grey'
+    ':enabled': {
+      cursor: 'pointer',
+      ':hover': {
+        color: 'white',
+        backgroundColor: 'grey'
+      }
+    },
+    ':disabled': {
+      backgroundColor: 'white'
     }
   }
 });

@@ -7,6 +7,36 @@ function BountyCard(props) {
   const { freezeBounty, uploadFile } = props;
   const { account, elem } = props.data;
 
+  const challengeButton =
+    elem.status === 'Challenge' ? (
+      <div className={css(styles.right_container)}>
+        <div className={css(styles.upload_container)}>
+          <button className={css(styles.fakeUpload_button)}>
+            Submit Challenge
+          </button>
+          <input
+            className={css(styles.upload_button)}
+            type="file"
+            onChange={(e) => uploadFile(e, elem.bountyAddress)}
+          />
+        </div>
+      </div>
+    ) : (
+      <div className={css(styles.right_container)}>
+        <div className={css(styles.upload_container)}>
+          <button className={css(styles.fakeUpload_button)} disabled>
+            Submit Challenge
+          </button>
+          <input
+            className={css(styles.upload_button)}
+            type="file"
+            onChange={(e) => uploadFile(e, elem.bountyAddress)}
+            disabled
+          />
+        </div>
+      </div>
+    );
+
   return (
     <div className={css(styles.bountyCard_container)}>
       {account === elem.owner ? (
@@ -35,18 +65,8 @@ function BountyCard(props) {
             <p>Time Left: {elem.timeLeft}</p>
           </div>
         </div>
-        <div className={css(styles.right_container)}>
-          <div className={css(styles.upload_container)}>
-            <button className={css(styles.fakeUpload_button)}>
-              Submit Challenge
-            </button>
-            <input
-              className={css(styles.upload_button)}
-              type="file"
-              onChange={(e) => uploadFile(e, elem.bountyAddress)}
-            />
-          </div>
-        </div>
+
+        {challengeButton}
       </div>
     </div>
   );

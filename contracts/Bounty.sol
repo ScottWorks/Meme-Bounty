@@ -149,7 +149,7 @@ contract Bounty is ReentrancyGuard {
         address _owner,
         string _description,
         uint _voterDeposit,
-        uint _challengerDeadline,
+        uint _challengerDuration,
         uint _voteDuration
         ) 
     public 
@@ -163,7 +163,7 @@ contract Bounty is ReentrancyGuard {
         ownerAddress = _owner;
         description = _description;
         voterDeposit = _voterDeposit;
-        challengeDuration = _challengerDeadline;
+        challengeDuration = _challengerDuration;
         voteDuration = _voteDuration;
         status = Status.Challenge;
         creationTimestamp = now;

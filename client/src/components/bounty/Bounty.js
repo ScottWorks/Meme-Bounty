@@ -149,11 +149,14 @@ class Bounty extends Component {
 
   render() {
     const { bountyDetails, ipfsUrls } = this.state;
-    let revealButton, withdrawButton;
+
+    let revealButton, withdrawButton, status;
 
     if (bountyDetails) {
+      status = bountyDetails.status;
+
       revealButton =
-        bountyDetails.status === 'Reveal' ? (
+        status === 'Reveal' ? (
           <input
             className={css(styles.button)}
             type="button"
@@ -171,7 +174,7 @@ class Bounty extends Component {
         );
 
       withdrawButton =
-        bountyDetails.status === 'Withdraw' ? (
+        status === 'Withdraw' ? (
           <input
             className={css(styles.button)}
             type="button"
@@ -208,7 +211,7 @@ class Bounty extends Component {
         </div>
 
         <ChallengeList
-          data={{ ipfsUrls }}
+          data={{ ipfsUrls, status }}
           upVoteChallenge={this.upVoteChallenge}
         />
       </div>
