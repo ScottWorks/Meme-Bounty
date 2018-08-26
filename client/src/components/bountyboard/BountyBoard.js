@@ -53,8 +53,8 @@ class BountyBoard extends Component {
 
     const convertedBountyTotal = web3.utils.toWei(bountyTotal, 'ether');
     const convertedVoteDeposit = web3.utils.toWei(voteDeposit, 'ether');
-    const convertedchallengeDuration = challengeDuration * 3600;
-    const convertedvoteDuration = voteDuration * 3600;
+    const convertedchallengeDuration = challengeDuration * 60;
+    const convertedvoteDuration = voteDuration * 60;
 
     const result = await bountyBoardInstance.methods
       .createBountyContract(

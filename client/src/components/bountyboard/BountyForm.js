@@ -39,7 +39,7 @@ function BountyForm(props) {
       <br />
       <br />
 
-      <label htmlFor="Challenge-Duration">Challenge Duration (hr): </label>
+      <label htmlFor="Challenge-Duration">Challenge Duration (min): </label>
       <input
         name="Challenge-Duration"
         type="number"
@@ -50,7 +50,7 @@ function BountyForm(props) {
       <br />
       <br />
 
-      <label htmlFor="Vote-Duration">Vote Duration (hr): </label>
+      <label htmlFor="Vote-Duration">Vote Duration (min): </label>
       <input
         name="Vote-Duration"
         type="number"

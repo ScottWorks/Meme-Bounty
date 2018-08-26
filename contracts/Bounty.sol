@@ -97,7 +97,7 @@ contract Bounty is ReentrancyGuard {
 
     modifier isRevealPeriod(){
         require(now > creationTimestamp + challengeDuration + voteDuration, "Reveal period has not started.");
-        require(now < creationTimestamp + challengeDuration + voteDuration + 48 hours, "Reveal period has ended.");
+        require(now < creationTimestamp + challengeDuration + voteDuration + 5 minutes, "Reveal period has ended.");
         if(status != Status.Reveal){
             status = Status.Reveal;
         }        
@@ -108,7 +108,7 @@ contract Bounty is ReentrancyGuard {
     ///@dev locks out function from being called outside of Withdrawal period and updates state of status (if needed)
     
     modifier isWithdrawalPeriod(){
-        require(now > creationTimestamp + challengeDuration + voteDuration + 48 hours, "Polling period has not started.");
+        require(now > creationTimestamp + challengeDuration + voteDuration + 5 minutes, "Polling period has not started.");
         if(status != Status.Withdraw){
             status = Status.Withdraw;
         }        
@@ -178,6 +178,8 @@ contract Bounty is ReentrancyGuard {
 // =================
 
 
+
+    /// @dev when isStopped is equal to 'true', users will not be able to interact with the bounty.
 
     function toggleEmergencyStop()
     public
@@ -372,33 +374,7 @@ contract Bounty is ReentrancyGuard {
     }
 
 
-    // FOR TESTING ONLY
-
-    // function getCommit()
-    // public
-    // view
-    // returns(bytes32[])
-    // { 
-    //     Vote storage _voter = voter[msg.sender];
-
-    //     return _voter.commitHash;
-    // }
-
-
-    // FOR TESTING ONLY
-
-    // function hashStuff(bytes20 _challengerAddress, uint salt)    
-    // public
-    // pure
-    // returns(bytes32)
-    // {
-    //     bytes32 deezNutz = keccak256(abi.encodePacked(_challengerAddress, salt));
-
-    //     return deezNutz;
-    // }
-
-
-    /** @dev hashes the provided address and salt then matches the result to a value stored in commithash array, If a commit mataches the hash then the commit is removed from the array, the challenger is awarded an upvote and the voter is added to the challengers voted array, 
+     /** @dev hashes the provided address and salt then matches the result to a value stored in commithash array, If a commit mataches the hash then the commit is removed from the array, the challenger is awarded an upvote and the voter is added to the challengers voted array, 
     *   @param _challengerAddress - the address of the challenger
     *   @param salt -a random number generated on the client
     */
