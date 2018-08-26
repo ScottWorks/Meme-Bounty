@@ -211,9 +211,9 @@ contract Bounty is ReentrancyGuard {
         uint,
         uint,
         uint,
-        uint,
         uint, 
         uint,
+        address,
         bool
     )
     {
@@ -229,9 +229,9 @@ contract Bounty is ReentrancyGuard {
             challengeDuration,
             voteDuration,
             totalVoterCount,
-            winningVoterCount,
             voterDepositTotal,
             voterPayout,
+            bountyWinner,
             isStopped
         );
     }

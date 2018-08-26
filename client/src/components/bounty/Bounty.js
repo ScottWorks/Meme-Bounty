@@ -136,15 +136,21 @@ class Bounty extends Component {
 
   withdrawFunds = async () => {
     const { account } = this.props.data;
-    const { bountyInstance } = this.state;
+    const { bountyDetails, bountyInstance } = this.state;
 
-    const commitCount = localStorage.getItem(account);
+    console.log(account, bountyDetails.bountyWinner);
 
-    for (let i = 0; i < commitCount; i++) {
+    if (account == bountyDetails.bountyWinner) {
       await bountyInstance.methods.withdrawFunds().send({ from: account });
-    }
+    } else {
+      const commitCount = localStorage.getItem(account);
 
-    localStorage.setItem(account, 0);
+      for (let i = 0; i < commitCount; i++) {
+        await bountyInstance.methods.withdrawFunds().send({ from: account });
+      }
+
+      localStorage.setItem(account, 0);
+    }
   };
 
   render() {

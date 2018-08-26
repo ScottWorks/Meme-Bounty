@@ -48,9 +48,9 @@ const formatData = (web3, inputData) => {
     challengeDuration: challengeDuration,
     voteDuration: voteDuration,
     totalVoterCount: inputData[9],
-    winningVoterCount: inputData[10],
-    voterDepositTotal: web3.utils.fromWei(inputData[11], 'ether'),
-    voterPayout: web3.utils.fromWei(inputData[12], 'ether'),
+    voterDepositTotal: web3.utils.fromWei(inputData[10], 'ether'),
+    voterPayout: web3.utils.fromWei(inputData[11], 'ether'),
+    bountyWinner: inputData[12],
     timeLeft: convertTimeLeft(timeLeft)
   };
 };
