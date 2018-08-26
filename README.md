@@ -1,6 +1,6 @@
-## What is XBounty
+## What is Meme Bounty?
 
-Click here to learn more!
+[Click here to learn more!](https://medium.com/@scottworks/1-meme-bounty-introduction-33964f51d677)
 
 ## Installation
 
@@ -21,7 +21,7 @@ This project was developed using the [Truffle Framework](https://truffleframewor
 
 5. Now that our local development blockchain is live we can connect MetaMask. If you have not done so already install [MetaMask](https://www.metamask.io), then create an account. Once that has been completed login and change the network from Main Etherenum Network to Custom RPC, this should allow you to enter a "New RPC URL", in this field put "http://127.0.0.1:9545". This RPC URL should match that of the development blockchain. Last import some of the private keys found in the Truffle Development Console into MetaMask.
 
-6. Finally, open a new instance of the CLI (should be at the directory root), then navigate to the client folder `cd ./client/`. At this point we are ready to launch the webpack server and begin interacting with the XBounty Client, enter `npm start` and have fun!
+6. Finally, open a new instance of the CLI (should be at the directory root), then navigate to the client folder `cd ./client/`. At this point we are ready to launch the webpack server and begin interacting with the Meme Bounty Client, enter `npm start` and have fun!
    :tada: :tada: :tada:
 
 ## Testing
